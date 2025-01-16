@@ -1,9 +1,6 @@
 package chess;
 
-import chess.moveCalculator.BishopMovesCalculator;
-import chess.moveCalculator.KnightMovesCalculator;
-import chess.moveCalculator.PawnMovesCalculator;
-import chess.moveCalculator.PieceMovesCalculator;
+import chess.moveCalculator.*;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -34,6 +31,7 @@ public class ChessPiece {
                 movementType = new BishopMovesCalculator();
                 break;
             case ROOK:
+                movementType = new RookMovesCalculator();
                 break;
             case QUEEN:
                 break;
