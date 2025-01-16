@@ -1,6 +1,10 @@
 package chess;
 
+import chess.moveCalculator.PawnMovesCalculator;
+import chess.moveCalculator.PieceMovesCalculator;
+
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -10,12 +14,30 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor color;
+    private ChessGame.TeamColor pieceColor;
     private ChessPiece.PieceType type;
+    private PieceMovesCalculator movementType;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType pieceType) {
-        color = pieceColor;
-        type = pieceType;
+    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
+        switch (type) {
+            case PAWN:
+                movementType = new PawnMovesCalculator();
+                break;
+            case KNIGHT:
+                break;
+            case BISHOP:
+                break;
+            case ROOK:
+                break;
+            case QUEEN:
+                break;
+            case KING:
+                break;
+            default:
+                throw new NullPointerException("Piece Type Doesn't Exist");
+        }
     }
 
     /**
@@ -34,7 +56,7 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return color;
+        return pieceColor;
     }
 
     /**
@@ -52,6 +74,20 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        return movementType.checkMoves(board, myPosition);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 }
