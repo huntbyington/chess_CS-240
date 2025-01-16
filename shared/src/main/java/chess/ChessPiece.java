@@ -1,5 +1,6 @@
 package chess;
 
+import chess.moveCalculator.BishopMovesCalculator;
 import chess.moveCalculator.KnightMovesCalculator;
 import chess.moveCalculator.PawnMovesCalculator;
 import chess.moveCalculator.PieceMovesCalculator;
@@ -30,6 +31,7 @@ public class ChessPiece {
                 movementType = new KnightMovesCalculator();
                 break;
             case BISHOP:
+                movementType = new BishopMovesCalculator();
                 break;
             case ROOK:
                 break;
