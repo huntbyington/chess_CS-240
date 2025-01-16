@@ -34,6 +34,7 @@ public class ChessPiece {
                 movementType = new RookMovesCalculator();
                 break;
             case QUEEN:
+                movementType = new QueenMovesCalculator();
                 break;
             case KING:
                 break;
