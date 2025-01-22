@@ -59,4 +59,20 @@ public class KingMoveTests {
         );
     }
 
+    @Test
+    public void kingWithAllOtherTeam() {
+        TestUtilities.validateMoves("""
+                        |R|N|B|Q|K|B|N|R|
+                        |P|P|P|P|P|P|P|P|
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | | | | | |
+                        | | | | |k| | | |
+                        """,
+                new ChessPosition(1, 5),
+                new int[][]{{2, 5}, {1, 6}, {1, 4}, {2, 6}, {2, 4}}
+        );
+    }
 }

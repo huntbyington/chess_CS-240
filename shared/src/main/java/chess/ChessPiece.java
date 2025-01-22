@@ -37,6 +37,7 @@ public class ChessPiece {
                 movementType = new QueenMovesCalculator();
                 break;
             case KING:
+                movementType = new KingMovesCalculator();
                 break;
             default:
                 throw new NullPointerException("Piece Type Doesn't Exist");
