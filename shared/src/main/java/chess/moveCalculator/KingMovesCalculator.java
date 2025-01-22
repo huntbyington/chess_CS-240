@@ -27,14 +27,14 @@ public class KingMovesCalculator implements PieceMovesCalculator{
                             badMoves.addAll(newPiece.pieceMoves(board, newPosition));
                         }
                     }
-                    moveLogic = legalMove(board, myPosition, moveLogic, badMoves);
+                    legalMove(board, myPosition, moveLogic, badMoves);
                 }
             }
         }
 
-        for (int i = 0; i < moveLogic.length; i++) {
-            if (moveLogic[i][0] != -8) {
-                ChessPosition newPosition = new ChessPosition((myPosition.getRow() + moveLogic[i][0]), (myPosition.getColumn() + moveLogic[i][1]));
+        for (int[] ints : moveLogic) {
+            if (ints[0] != -8) {
+                ChessPosition newPosition = new ChessPosition((myPosition.getRow() + ints[0]), (myPosition.getColumn() + ints[1]));
                 moves.add(new ChessMove(myPosition, newPosition, null));
             }
         }
@@ -43,7 +43,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
     }
 
     //Compares badMoves and possible moves, doesn't add the possible moves contained within bad moves
-    private int[][] legalMove(ChessBoard board, ChessPosition myPosition, int[][] moveLogic, Collection<ChessMove> badMoves){
+    private void legalMove(ChessBoard board, ChessPosition myPosition, int[][] moveLogic, Collection<ChessMove> badMoves){
         ChessPiece currPiece = board.getPiece(myPosition);
         for (int i = 0; i < moveLogic.length; i++) {
             ChessPosition newPosition = new ChessPosition((myPosition.getRow() + moveLogic[i][0]), (myPosition.getColumn() + moveLogic[i][1]));
@@ -66,14 +66,13 @@ public class KingMovesCalculator implements PieceMovesCalculator{
                 }
             }
         }
-        return moveLogic;
     }
 
     private Collection<ChessMove> kingSpecCase(ChessPosition kingPos) {
         Collection<ChessMove> badMoves = new ArrayList<>();
         int[][] kingLogic = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
-        for (int i = 0; i < kingLogic.length; i++) {
-            ChessPosition newPosition = new ChessPosition(kingLogic[i][0], kingLogic[i][1]);
+        for (int[] ints : kingLogic) {
+            ChessPosition newPosition = new ChessPosition(ints[0], ints[1]);
             if ((newPosition.getRow() > 8) || (newPosition.getRow() < 1) || (newPosition.getColumn() > 8) || (newPosition.getColumn() < 1)) {
                 badMoves.add(new ChessMove(kingPos, newPosition, null));
             }

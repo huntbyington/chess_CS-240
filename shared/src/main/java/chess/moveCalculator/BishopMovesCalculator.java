@@ -13,12 +13,12 @@ public class BishopMovesCalculator implements PieceMovesCalculator{
 
         //Check Bishop moves using moveLogic
         int[][] moveLogic = {{1,1},{1,-1},{-1,1},{-1,-1}};
-        for (int i = 0; i < moveLogic.length; i++) {
+        for (int[] ints : moveLogic) {
             //Set piece check false until piece or border is seen
             boolean pieceCheck = false;
             ChessPosition newPosition = new ChessPosition(myPosition.getRow(), myPosition.getColumn());
             while (!pieceCheck) {
-                newPosition = new ChessPosition((newPosition.getRow() + moveLogic[i][0]), (newPosition.getColumn() + moveLogic[i][1]));
+                newPosition = new ChessPosition((newPosition.getRow() + ints[0]), (newPosition.getColumn() + ints[1]));
                 if (newPosition.getRow() > 8 || newPosition.getRow() < 1 || newPosition.getColumn() > 8 || newPosition.getColumn() < 1) {
                     pieceCheck = true;
                     continue;
