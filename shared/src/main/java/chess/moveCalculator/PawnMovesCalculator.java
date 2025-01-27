@@ -10,7 +10,7 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         ChessPiece currPiece = board.getPiece(myPosition);
         int myTeam = (currPiece.getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1;
 
-        //Checks for promotion if not possible returns an area containing a null piece
+        //Checks for promotion if not possible returns an array containing a null piece
         ChessPiece.PieceType[] promotion = getPromotionPieces(myPosition, myTeam);
 
         //Check forward move
