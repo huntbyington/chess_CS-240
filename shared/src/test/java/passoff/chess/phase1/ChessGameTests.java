@@ -1,6 +1,7 @@
-package passoff.chess;
+package passoff.chess.phase1;
 
 import chess.*;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ public class ChessGameTests {
     private ChessGame foolsMate;
 
     @BeforeEach
-    public void setFoolsMate() {
+    public void setUp() {
         try {
             foolsMate = new ChessGame();
             foolsMate.makeMove(new ChessMove(new ChessPosition(2, 6), new ChessPosition(3,6), null));
@@ -97,7 +98,7 @@ public class ChessGameTests {
 
     @Test
     @DisplayName("Make Moves Pawn Test")
-    public void makeMovesPawnTest() {
+    public void makeMovesPawnTest () {
         ChessGame myGame = new ChessGame();
         Collection<ChessMove> expected = new ArrayList<>();
 
@@ -127,14 +128,40 @@ public class ChessGameTests {
 
         assert expected == actual;
     }
+
     @Test
     @DisplayName("White Fools Mate Check Test")
     public void whiteFoolsMateCheckTest() {
         ChessGame myGame = new ChessGame();
-        boolean expected = true;
+        try {
+            myGame.makeMove(new ChessMove(new ChessPosition(2, 6), new ChessPosition(3, 6), null));
+            myGame.makeMove(new ChessMove(new ChessPosition(7, 5), new ChessPosition(5, 5), null));
+            myGame.makeMove(new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null));
+            myGame.makeMove(new ChessMove(new ChessPosition(8, 4), new ChessPosition(4, 8), null));
+        } catch (InvalidMoveException e) {
+            System.out.println(e.getMessage());
+        }
 
         boolean actual = myGame.isInCheck(ChessGame.TeamColor.WHITE);
 
-        assert expected == actual;
+        Assertions.assertTrue(actual);
+    }
+
+    @Test
+    @DisplayName("White Fools Mate Checkmate Test")
+    public void whiteFoolsMateCheckmateTest() {
+        ChessGame myGame = new ChessGame();
+        try {
+            myGame.makeMove(new ChessMove(new ChessPosition(2, 6), new ChessPosition(3, 6), null));
+            myGame.makeMove(new ChessMove(new ChessPosition(7, 5), new ChessPosition(5, 5), null));
+            myGame.makeMove(new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null));
+            myGame.makeMove(new ChessMove(new ChessPosition(8, 4), new ChessPosition(4, 8), null));
+        } catch (InvalidMoveException e) {
+            System.out.println(e.getMessage());
+        }
+
+        boolean actual = myGame.isInCheckmate(ChessGame.TeamColor.WHITE);
+
+        Assertions.assertTrue(actual);
     }
 }
