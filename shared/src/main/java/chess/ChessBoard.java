@@ -72,6 +72,19 @@ public class ChessBoard {
         addPiece(new ChessPosition(1,5), new ChessPiece(chess.ChessGame.TeamColor.WHITE, chess.ChessPiece.PieceType.KING));
     }
 
+    public ChessBoard deepCopy() {
+        ChessBoard copy = new ChessBoard();
+
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition newPosition = new ChessPosition(i,j);
+                copy.addPiece(newPosition, getPiece(newPosition));
+            }
+        }
+
+        return copy;
+    }
+
     @Override
     public String toString() {
         return "ChessBoard{" +

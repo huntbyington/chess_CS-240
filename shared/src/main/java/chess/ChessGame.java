@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -52,11 +53,28 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
         if (board.getPiece(startPosition) == null) {
             return new ArrayList<>();
         }
-        return board.getPiece(startPosition).pieceMoves(board, startPosition);
+        Collection<ChessMove> moves = board.getPiece(startPosition).pieceMoves(board, startPosition);
+        Iterator<ChessMove> movesIter = moves.iterator();
+        ChessBoard ogBoard = board.deepCopy();
+        ChessGame.TeamColor ogTurn = turn;
+        while (movesIter.hasNext()) {
+            ChessMove move = movesIter.next();
+            try {
+                makeMove(move);
+            } catch (InvalidMoveException e) {
+                if (!e.getMessage().equals("Move made out of turn")) {
+                    movesIter.remove();
+                }
+            } finally {
+                setBoard(ogBoard);
+                setTeamTurn(ogTurn);
+            }
+        }
+
+        return moves;
     }
 
     /**
@@ -70,8 +88,32 @@ public class ChessGame {
        if (piece == null) {
            throw new InvalidMoveException("No Piece at Given location");
        }
+       if (!legalMove(move)) {
+           throw new InvalidMoveException("Illegal move");
+       }
        board.addPiece(move.getStartPosition(), null);
+       if (move.getPromotionPiece() != null) {
+           piece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+       }
        board.addPiece(move.getEndPosition(), piece);
+       if (isInCheck(piece.getTeamColor())) {
+           throw new InvalidMoveException("Can't move into check");
+       }
+       if (piece.getTeamColor() != turn) {
+            throw new InvalidMoveException("Move made out of turn");
+       }
+       turn = (turn == TeamColor.BLACK) ? TeamColor.WHITE : TeamColor.BLACK;
+    }
+
+    private boolean legalMove (ChessMove checkMove) {
+        ChessPiece piece = board.getPiece(checkMove.getStartPosition());
+        Collection<ChessMove> moves = piece.pieceMoves(board, checkMove.getStartPosition());
+        for (ChessMove move : moves) {
+            if (move.equals(checkMove)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -100,7 +142,7 @@ public class ChessGame {
         }
 
         for (ChessMove move : badMoves) {
-            if (move.getEndPosition() == kingPosition) {
+            if (move.getEndPosition().equals(kingPosition)) {
                 return true;
             }
         }
@@ -115,7 +157,42 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition newPosition = new ChessPosition(i,j);
+                if (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = board.getPiece(newPosition).pieceMoves(board, newPosition);
+                    if(doesEndCheck(moves, teamColor)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    // Returns true if there is a move contained within moves that will make the given team not in check
+    private boolean doesEndCheck (Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
+        ChessBoard ogBoard = board.deepCopy();
+        for (ChessMove move : moves) {
+            try {
+                makeMove(move);
+                if (!isInCheck(teamColor)) {
+                    return true;
+                }
+            } catch (InvalidMoveException e) {
+                throw new RuntimeException(e);
+            } finally {
+                setBoard(ogBoard);
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -135,7 +212,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        this.board = board;
+        this.board = board.deepCopy();
     }
 
     /**
