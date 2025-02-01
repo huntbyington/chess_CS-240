@@ -77,6 +77,18 @@ public class ChessGame {
         return moves;
     }
 
+    // Checks if current move is a part of the given pieces move set
+    private boolean legalMove (ChessMove checkMove) {
+        ChessPiece piece = board.getPiece(checkMove.getStartPosition());
+        Collection<ChessMove> moves = piece.pieceMoves(board, checkMove.getStartPosition());
+        for (ChessMove move : moves) {
+            if (move.equals(checkMove)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Makes a move in a chess game
      *
@@ -103,17 +115,6 @@ public class ChessGame {
             throw new InvalidMoveException("Move made out of turn");
        }
        turn = (turn == TeamColor.BLACK) ? TeamColor.WHITE : TeamColor.BLACK;
-    }
-
-    private boolean legalMove (ChessMove checkMove) {
-        ChessPiece piece = board.getPiece(checkMove.getStartPosition());
-        Collection<ChessMove> moves = piece.pieceMoves(board, checkMove.getStartPosition());
-        for (ChessMove move : moves) {
-            if (move.equals(checkMove)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -150,6 +151,27 @@ public class ChessGame {
         return false;
     }
 
+    // Returns true if there is a move contained within moves that will make the given team not in check
+    private boolean doesEndCheck (Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
+        ChessBoard ogBoard = board.deepCopy();
+        for (ChessMove move : moves) {
+            try {
+                makeMove(move);
+                if (!isInCheck(teamColor)) {
+                    return true;
+                }
+            } catch (InvalidMoveException ignored) {
+                if (!isInCheck(teamColor)) {
+                    return true;
+                }
+            } finally {
+                setBoard(ogBoard);
+            }
+        }
+
+        return false;
+    }
+
     /**
      * Determines if the given team is in checkmate
      *
@@ -176,25 +198,6 @@ public class ChessGame {
         return true;
     }
 
-    // Returns true if there is a move contained within moves that will make the given team not in check
-    private boolean doesEndCheck (Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
-        ChessBoard ogBoard = board.deepCopy();
-        for (ChessMove move : moves) {
-            try {
-                makeMove(move);
-                if (!isInCheck(teamColor)) {
-                    return true;
-                }
-            } catch (InvalidMoveException e) {
-                throw new RuntimeException(e);
-            } finally {
-                setBoard(ogBoard);
-            }
-        }
-
-        return false;
-    }
-
     /**
      * Determines if the given team is in stalemate, which here is defined as having
      * no valid moves
@@ -203,7 +206,23 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+
+        for (int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition newPosition = new ChessPosition(i,j);
+                if (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = board.getPiece(newPosition).pieceMoves(board, newPosition);
+                    if(doesEndCheck(moves, teamColor)) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
