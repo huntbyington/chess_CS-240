@@ -1,10 +1,9 @@
 package dataaccess;
 
-/*
-If a data access method fails it throws this exception
+/**
+ * Indicates there was an error connecting to the database
  */
-
-public class DataAccessException extends RuntimeException {
+public class DataAccessException extends Exception{
     public DataAccessException(String message) {
         super(message);
     }
