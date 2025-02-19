@@ -1,11 +1,12 @@
 package dataaccess;
 
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
 
 public interface UserDAO {
 
-    void createUser(String username, String password, String email);
+    void createUser(UserData userData) throws DataAccessException;;
     UserData getUser(String username) throws DataAccessException;
-    void clear();
+    void clear() throws DataAccessException;;
 
 }

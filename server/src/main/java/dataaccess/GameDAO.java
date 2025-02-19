@@ -6,10 +6,10 @@ import model.GameData;
 
 public interface GameDAO {
 
-    void createGame(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game);
+    void createGame(GameData gameData) throws DataAccessException;;
     GameData getGame(int gameID) throws DataAccessException;
-    Collection<GameData> listGames();
+    Collection<GameData> listGames() throws DataAccessException;;
     void updateGame(int gameID) throws DataAccessException;
-    void clear();
+    void clear() throws DataAccessException;;
 
 }
