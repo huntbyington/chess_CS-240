@@ -1,8 +1,35 @@
 package server;
 
+import com.google.gson.Gson;
+import dataaccess.*;
+import service.*;
 import spark.*;
 
 public class Server {
+
+    UserDAO userDAO;
+    GameDAO gameDAO;
+    AuthDAO authDAO;
+
+
+    UserService userService;
+    UserHandler userHandler;
+
+    GameService gameService;
+    GameHandler gameHandler;
+
+
+    public Server() {
+        authDAO = new MemoryAuthDataAccess();
+
+        userDAO = new MemoryUserDataAccess();
+        userService = new UserService(userDAO, authDAO);
+        userHandler = new UserHandler();
+
+        gameDAO = new MemoryGameDataAccess();
+        gameService = new GameService(gameDAO, authDAO);
+        gameHandler = new GameHandler();
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -10,6 +37,9 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
+        Spark.delete("/db", this::clear);
+
+        Spark.post("/user", UserHandler::register);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
@@ -21,5 +51,13 @@ public class Server {
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
+    }
+
+    private Object clear(Request req, Response res) throws DataAccessException {
+        userService.clear();
+        gameService.clear();
+
+        res.status(200);
+        return "";
     }
 }
