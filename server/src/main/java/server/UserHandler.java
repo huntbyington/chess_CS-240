@@ -44,7 +44,7 @@ public class UserHandler {
             authData = userService.login(user);
 
             res.status(200);
-            return "{ \"username\":" + user.username() + ", \"authToken\":" + authData.authToken() + " }";
+            return "{ \"username\":\"" + user.username() + "\", \"authToken\":\"" + authData.authToken() + "\" }";
         } catch (DataAccessException e) {
             res.status(401);
             return "{ \"message\": \"Error: unauthorized\" }";
