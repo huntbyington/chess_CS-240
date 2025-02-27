@@ -41,6 +41,10 @@ public class UserService {
         throw new DataAccessException("Incorrect Username or Password");
     }
 
+    public void logout(String logoutToken) throws DataAccessException {
+        authDAO.deleteAuth(logoutToken);
+    }
+
     public void clear() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();

@@ -40,6 +40,7 @@ public class Server {
 
         Spark.post("/user", UserHandler::register);
         Spark.post("/session", UserHandler::login);
+        Spark.delete("/session", UserHandler::logout);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         //Spark.init();
@@ -58,6 +59,6 @@ public class Server {
         gameHandler.clear();
 
         res.status(200);
-        return "";
+        return "{}";
     }
 }

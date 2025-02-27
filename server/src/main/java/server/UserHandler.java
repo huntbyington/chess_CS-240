@@ -51,6 +51,19 @@ public class UserHandler {
         }
     }
 
+    public static Object logout(Request req, Response res) {
+        try {
+            String logoutToken = req.headers("authorization");
+            userService.logout(logoutToken);
+
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException e) {
+            res.status(401);
+            return "{ \"message\": \"Error: unauthorized\" }";
+        }
+    }
+
     public void clear() throws DataAccessException {
         userService.clear();
     }
