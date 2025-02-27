@@ -11,7 +11,6 @@ public class Server {
     GameDAO gameDAO;
     AuthDAO authDAO;
 
-
     UserService userService;
     UserHandler userHandler;
 
@@ -24,11 +23,11 @@ public class Server {
 
         userDAO = new MemoryUserDataAccess();
         userService = new UserService(userDAO, authDAO);
-        userHandler = new UserHandler();
+        userHandler = new UserHandler(userService);
 
         gameDAO = new MemoryGameDataAccess();
         gameService = new GameService(gameDAO, authDAO);
-        gameHandler = new GameHandler();
+        gameHandler = new GameHandler(gameService);
     }
 
     public int run(int desiredPort) {
@@ -40,9 +39,10 @@ public class Server {
         Spark.delete("/db", this::clear);
 
         Spark.post("/user", UserHandler::register);
+        Spark.post("/session", UserHandler::login);
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
-        Spark.init();
+        //Spark.init();
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -54,8 +54,8 @@ public class Server {
     }
 
     private Object clear(Request req, Response res) throws DataAccessException {
-        userService.clear();
-        gameService.clear();
+        userHandler.clear();
+        gameHandler.clear();
 
         res.status(200);
         return "";
