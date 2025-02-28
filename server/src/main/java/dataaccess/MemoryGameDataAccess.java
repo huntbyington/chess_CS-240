@@ -1,10 +1,12 @@
 package dataaccess;
 
+import model.AuthData;
 import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class MemoryGameDataAccess implements GameDAO{
 
@@ -21,8 +23,14 @@ public class MemoryGameDataAccess implements GameDAO{
     }
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
-        return new ArrayList<>(gameDataMap.values());
+    public Collection<GameData> listGames(String username) throws DataAccessException {
+        Collection<GameData> gameList = new ArrayList<>();
+        for (GameData gameData : gameDataMap.values()) {
+            if (Objects.equals(gameData.blackUsername(), username) || Objects.equals(gameData.whiteUsername(), username)) {
+                gameList.add(gameData);
+            }
+        }
+        return gameList;
     }
 
     @Override
