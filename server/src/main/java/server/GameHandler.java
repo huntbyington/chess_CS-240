@@ -3,11 +3,13 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.GameData;
+import model.UserData;
 import service.GameService;
 import spark.Request;
 import spark.Response;
 
 import java.util.Collection;
+import java.util.Objects;
 
 public class GameHandler {
 
@@ -18,8 +20,8 @@ public class GameHandler {
     }
 
     public static Object listGames(Request req, Response res) {
-        String authToken = req.headers("authorization");
         try {
+            String authToken = req.headers("authorization");
             Collection<GameData> gameList = gameService.listGames(authToken);
 
             String jsonReturn = new Gson().toJson(gameList);
@@ -29,6 +31,27 @@ public class GameHandler {
         } catch (DataAccessException e) {
             res.status(401);
             return "{ \"message\": \"Error: unauthorized\" }";
+        }
+    }
+
+    private record GameName(String gameName){}
+
+    public static Object createGame(Request req, Response res) {
+        try {
+            String authToken = req.headers("authorization");
+            String gameName = new Gson().fromJson(req.body(), GameName.class).gameName;
+            int gameId = gameService.createGame(authToken, gameName);
+
+            res.status(200);
+            return "{ \"gameID\": " + gameId + " }";
+        } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "Incorrect Authorization")) {
+                res.status(401);
+                return "{ \"message\": \"Error: unauthorized\" }";
+            } else {
+                res.status(400);
+                return "{ \"message\": \"Error: bad request\" }";
+            }
         }
     }
 
