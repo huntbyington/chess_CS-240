@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 public class GameServiceTests {
 
@@ -62,5 +63,69 @@ public class GameServiceTests {
         gameId = gameService.createGame("authToken2", "myNewGame");
 
         assert gameId == 1;
+    }
+
+    @Test
+    @DisplayName("Create Game Invalid Auth Token")
+    public void createGameInvalidAuthToken() {
+        try {
+            gameService.createGame("badToken", "myGame");
+
+            assert false;
+        } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "Incorrect Authorization")) {
+                assert true;
+            } else {
+                assert false;
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Create Game Invalid Game Name")
+    public void createGameInvalidGameName() {
+        try {
+            memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
+            gameService.createGame("authToken", "");
+
+            assert false;
+        } catch (DataAccessException e) {
+            if (Objects.equals(e.getMessage(), "Invalid Game Name")) {
+                assert true;
+            } else {
+                assert false;
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("Create and List Games Single User")
+    public void createAndListGamesSingleUser() throws DataAccessException {
+        memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
+        gameService.createGame("authToken", "myGame");
+        gameService.createGame("authToken", "myNewGame");
+
+        Collection<GameData> gameList = gameService.listGames("authToken");
+
+        for (GameData game : gameList) {
+            // Assert returns false if expected game names are not in gameList
+            assert Objects.equals(game.gameName(), "myGame") || Objects.equals(game.gameName(), "myNewGame");
+        }
+    }
+
+    @Test
+    @DisplayName("Create and List Games Multiple Users")
+    public void createAndListGamesMultUsers() throws DataAccessException {
+        memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
+        memoryAuthDataAccess.createAuth(new AuthData("authToken2", "username2"));
+        gameService.createGame("authToken", "myGame");
+        gameService.createGame("authToken2", "myGame2");
+
+        Collection<GameData> gameList = gameService.listGames("authToken");
+
+        for (GameData game : gameList) {
+            // Assert returns false if expected game names are not in gameList
+            assert Objects.equals(game.gameName(), "myGame");
+        }
     }
 }
