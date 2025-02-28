@@ -24,8 +24,43 @@ public class GameServiceTests {
         Collection<GameData> actualGameList = gameService.listGames("authToken");
 
         Collection<GameData> expectedGameList = new ArrayList<>();
-        
+
         assert expectedGameList.equals(actualGameList);
     }
 
+    @Test
+    @DisplayName("Create Game Test")
+    public void createGameTest() throws DataAccessException {
+        memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
+        int gameId = gameService.createGame("authToken", "myGame");
+
+        assert gameId == 0;
+    }
+
+    @Test
+    @DisplayName("Create Game ID Incrementation Test")
+    public void createGameIdIncTest() throws DataAccessException {
+        memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
+        int gameId = gameService.createGame("authToken", "myGame");
+
+        assert gameId == 0;
+
+        gameId = gameService.createGame("authToken", "myNewGame");
+
+        assert gameId == 1;
+    }
+
+    @Test
+    @DisplayName("Create Game ID Incrementation with Multiple Users Test")
+    public void createGameIdIncMultUsersTest() throws DataAccessException {
+        memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
+        int gameId = gameService.createGame("authToken", "myGame");
+
+        assert gameId == 0;
+
+        memoryAuthDataAccess.createAuth(new AuthData("authToken2", "username2"));
+        gameId = gameService.createGame("authToken2", "myNewGame");
+
+        assert gameId == 1;
+    }
 }
