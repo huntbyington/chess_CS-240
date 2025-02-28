@@ -8,6 +8,7 @@ import service.GameService;
 import spark.Request;
 import spark.Response;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -19,12 +20,19 @@ public class GameHandler {
         GameHandler.gameService = gameService;
     }
 
+    public record GameListObject(int gamID, String whiteUsername, String blackUsername, String gameName) {}
+
     public static Object listGames(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
             Collection<GameData> gameList = gameService.listGames(authToken);
 
-            String jsonReturn = new Gson().toJson(gameList);
+            Collection<GameListObject> formatGameList = new ArrayList<>();
+            for (GameData game : gameList) {
+                formatGameList.add(new GameListObject(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName()));
+            }
+
+            String jsonReturn = new Gson().toJson(formatGameList);
 
             res.status(200);
             return "{\"games\": " + jsonReturn + "}";
@@ -34,7 +42,7 @@ public class GameHandler {
         }
     }
 
-    private record GameName(String gameName){}
+    private record GameName(String gameName) {}
 
     public static Object createGame(Request req, Response res) {
         try {
