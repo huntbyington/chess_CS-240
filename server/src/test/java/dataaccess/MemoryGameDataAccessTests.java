@@ -53,7 +53,7 @@ public class MemoryGameDataAccessTests {
         expected.add(gameData);
         expected.add(gameData1);
 
-        Collection<GameData> actual = myGames.listGames();
+        Collection<GameData> actual = myGames.listGames(gameData.blackUsername());
 
         GameData[] expectedArray = expected.toArray(new GameData[0]);
         GameData[] actualArray = actual.toArray(new GameData[0]);
