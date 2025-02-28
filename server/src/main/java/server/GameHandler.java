@@ -20,11 +20,33 @@ public class GameHandler {
         GameHandler.gameService = gameService;
     }
 
-    public record GameListObject(int gamID, String whiteUsername, String blackUsername, String gameName) {}
+    private static String exceptionHandler(String eMessage, Response res) {
+        switch (eMessage) {
+            case "Invalid Game ID", "Invalid Player Color", "Invalid Game Name" -> {
+                res.status(400);
+                return "{ \"message\": \"Error: bad request\" }";
+            }
+            case "Incorrect Authorization" -> {
+                res.status(401);
+                return "{ \"message\": \"Error: unauthorized\" }";
+            }
+            case "Player Color Already Taken" -> {
+                res.status(403);
+                return "{ \"message\": \"Error: already taken\" }";
+            }
+            case null, default -> {
+                res.status(500);
+                return "{ \"message\": \"Error: " + eMessage + "\" ";
+            }
+        }
+    }
+
+    private record GameListObject(int gamID, String whiteUsername, String blackUsername, String gameName) {}
 
     public static Object listGames(Request req, Response res) {
         try {
             String authToken = req.headers("authorization");
+
             Collection<GameData> gameList = gameService.listGames(authToken);
 
             Collection<GameListObject> formatGameList = new ArrayList<>();
@@ -37,8 +59,7 @@ public class GameHandler {
             res.status(200);
             return "{\"games\": " + jsonReturn + "}";
         } catch (DataAccessException e) {
-            res.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
+            return exceptionHandler(e.getMessage(), res);
         }
     }
 
@@ -48,18 +69,31 @@ public class GameHandler {
         try {
             String authToken = req.headers("authorization");
             String gameName = new Gson().fromJson(req.body(), GameName.class).gameName;
+
             int gameId = gameService.createGame(authToken, gameName);
 
             res.status(200);
             return "{ \"gameID\": " + gameId + " }";
         } catch (DataAccessException e) {
-            if (Objects.equals(e.getMessage(), "Incorrect Authorization")) {
-                res.status(401);
-                return "{ \"message\": \"Error: unauthorized\" }";
-            } else {
-                res.status(400);
-                return "{ \"message\": \"Error: bad request\" }";
-            }
+            return exceptionHandler(e.getMessage(), res);
+        }
+    }
+
+    private record JoinGameData(String playerColor, int gameID) {}
+
+    public static Object joinGame(Request req, Response res) {
+        try {
+            String authToken = req.headers("authorization");
+            JoinGameData joinGameData = new Gson().fromJson(req.body(), JoinGameData.class);
+            String playerColor = joinGameData.playerColor();
+            int gameID = joinGameData.gameID();
+
+            gameService.joinGame(authToken, playerColor, gameID);
+
+            res.status(200);
+            return "{}";
+        } catch (DataAccessException e) {
+            return exceptionHandler(e.getMessage(), res);
         }
     }
 

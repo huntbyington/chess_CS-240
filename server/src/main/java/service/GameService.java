@@ -34,7 +34,6 @@ public class GameService {
 
     public int createGame(String authToken, String gameName) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
-        GameData gameData;
 
         if (authData == null) {
             throw new DataAccessException("Incorrect Authorization");
@@ -43,6 +42,7 @@ public class GameService {
             throw new DataAccessException("Invalid Game Name");
         }
 
+        GameData gameData;
         if (new java.util.Random().nextBoolean()) {
             gameData = new GameData(nextGameId++, authData.username(), "", gameName, new ChessGame());
         } else {
@@ -51,6 +51,41 @@ public class GameService {
         gameDAO.createGame(gameData);
 
         return gameData.gameID();
+    }
+
+    public void joinGame(String authToken, String playerColor, int gameID) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+
+        if (authData == null) {
+            throw new DataAccessException("Incorrect Authorization");
+        }
+
+        GameData gameData = gameDAO.getGame(gameID);
+
+        if (gameData == null) {
+            throw new DataAccessException("Invalid Game ID");
+        }
+
+        GameData newGameData;
+        if (Objects.equals(playerColor, "WHITE")) {
+            if (Objects.equals(gameData.whiteUsername(), "")) {
+                newGameData = new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(),
+                                            gameData.gameName(), gameData.game());
+            } else {
+                throw new DataAccessException("Player Color Already Taken");
+            }
+        } else if (Objects.equals(playerColor, "BLACK")) {
+            if (Objects.equals(gameData.blackUsername(), "")) {
+                newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(),
+                                            gameData.gameName(), gameData.game());
+            } else {
+                throw new DataAccessException("Player Color Already Taken");
+            }
+        } else {
+            throw new DataAccessException("Invalid Player Color");
+        }
+
+        gameDAO.updateGame(newGameData);
     }
 
     public void clear() throws DataAccessException {
