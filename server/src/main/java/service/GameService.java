@@ -19,7 +19,7 @@ public class GameService {
     public GameService(GameDAO gameDAO, AuthDAO authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
-        nextGameId = 0;
+        nextGameId = 1;
     }
 
     public Collection<GameData> listGames(String authToken) throws DataAccessException {
