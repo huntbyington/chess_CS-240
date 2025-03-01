@@ -42,12 +42,7 @@ public class GameService {
             throw new DataAccessException("Invalid Game Name");
         }
 
-        GameData gameData;
-        if (new java.util.Random().nextBoolean()) {
-            gameData = new GameData(nextGameId++, authData.username(), "", gameName, new ChessGame());
-        } else {
-            gameData = new GameData(nextGameId++, "", authData.username(), gameName, new ChessGame());
-        }
+        GameData gameData = new GameData(nextGameId++, null, null, gameName, new ChessGame());
         gameDAO.createGame(gameData);
 
         return gameData.gameID();
@@ -68,7 +63,7 @@ public class GameService {
 
         GameData newGameData;
         if (Objects.equals(playerColor, "WHITE")) {
-            if (Objects.equals(gameData.whiteUsername(), "")
+            if (Objects.equals(gameData.whiteUsername(), null)
                     && !Objects.equals(gameData.blackUsername(), playerColor)) {
                 newGameData = new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(),
                                             gameData.gameName(), gameData.game());
@@ -76,7 +71,7 @@ public class GameService {
                 throw new DataAccessException("Player Color Already Taken");
             }
         } else if (Objects.equals(playerColor, "BLACK")) {
-            if (Objects.equals(gameData.blackUsername(), "")
+            if (Objects.equals(gameData.blackUsername(), null)
                     && !Objects.equals(gameData.whiteUsername(), playerColor)) {
                 newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(),
                                             gameData.gameName(), gameData.game());
