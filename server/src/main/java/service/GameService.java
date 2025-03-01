@@ -8,6 +8,7 @@ import model.AuthData;
 import model.GameData;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class GameService {
@@ -22,7 +23,7 @@ public class GameService {
         nextGameId = 1;
     }
 
-    public Collection<GameData> listGames(String authToken) throws DataAccessException {
+    public HashSet<GameData> listGames(String authToken) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
 
         if (authData == null) {

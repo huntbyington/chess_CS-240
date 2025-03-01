@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class GameServiceTests {
@@ -24,7 +25,7 @@ public class GameServiceTests {
         memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
         Collection<GameData> actualGameList = gameService.listGames("authToken");
 
-        Collection<GameData> expectedGameList = new ArrayList<>();
+        HashSet<GameData> expectedGameList = new HashSet<>();
 
         assert expectedGameList.equals(actualGameList);
     }
@@ -105,7 +106,7 @@ public class GameServiceTests {
         gameService.createGame("authToken", "myGame");
         gameService.createGame("authToken", "myNewGame");
 
-        Collection<GameData> gameList = gameService.listGames("authToken");
+        HashSet<GameData> gameList = gameService.listGames("authToken");
 
         for (GameData game : gameList) {
             // Assert returns false if expected game names are not in gameList
@@ -121,7 +122,7 @@ public class GameServiceTests {
         gameService.createGame("authToken", "myGame");
         gameService.createGame("authToken2", "myGame2");
 
-        Collection<GameData> gameList = gameService.listGames("authToken");
+        HashSet<GameData> gameList = gameService.listGames("authToken");
 
         for (GameData game : gameList) {
             // Assert returns false if expected game names are not in gameList
