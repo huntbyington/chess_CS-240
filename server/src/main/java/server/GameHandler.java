@@ -39,7 +39,7 @@ public class GameHandler {
         }
     }
 
-    private record GameListObject(int gamID, String whiteUsername, String blackUsername, String gameName) {}
+    private record GameListObject(int gameID, String whiteUsername, String blackUsername, String gameName) {}
 
     public static Object listGames(Request req, Response res) {
         try {

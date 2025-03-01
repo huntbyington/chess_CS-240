@@ -1,7 +1,7 @@
 package dataaccess;
 
-import java.util.HashSet;
-
+import java.util.ArrayList;
+import java.util.Collection;
 import model.GameData;
 
 public interface GameDAO {
@@ -9,7 +9,7 @@ public interface GameDAO {
     void createGame(GameData gameData) throws DataAccessException;
 
     GameData getGame(int gameID) throws DataAccessException;
-    HashSet<GameData> listGames(String username) throws DataAccessException;
+    Collection<GameData> listGames(String username) throws DataAccessException;
 
     void updateGame(GameData gameData) throws DataAccessException;
     void clear() throws DataAccessException;
