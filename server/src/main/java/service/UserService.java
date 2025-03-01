@@ -18,7 +18,8 @@ public class UserService {
     }
 
     public AuthData register(UserData user) throws DataAccessException {
-        if (Objects.equals(user.username(), "") || Objects.equals(user.password(), "")) {
+        if ((Objects.equals(user.username(), "") || Objects.equals(user.password(), "")) ||
+                (Objects.equals(user.username(), null) || Objects.equals(user.password(), null))) {
             throw new DataAccessException("Invalid Username or Password");
         }
 
