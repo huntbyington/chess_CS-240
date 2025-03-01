@@ -33,6 +33,10 @@ public class UserService {
     public AuthData login(UserData user) throws DataAccessException {
         UserData queryUser = userDAO.getUser(user.username());
 
+        if (queryUser == null) {
+            throw new DataAccessException("Incorrect Username or Password");
+        }
+
         if (Objects.equals(queryUser.username(), user.username())) {
             if (Objects.equals(queryUser.password(), user.password())) {
                 String authToken = UUID.randomUUID().toString();
