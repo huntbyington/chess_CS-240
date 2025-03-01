@@ -12,8 +12,8 @@ import java.util.Objects;
 
 public class GameService {
 
-    GameDAO gameDAO;
-    AuthDAO authDAO;
+    final GameDAO gameDAO;
+    final AuthDAO authDAO;
     private int nextGameId;
 
     public GameService(GameDAO gameDAO, AuthDAO authDAO) {

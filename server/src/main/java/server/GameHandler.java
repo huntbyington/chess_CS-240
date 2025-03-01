@@ -3,14 +3,12 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.GameData;
-import model.UserData;
 import service.GameService;
 import spark.Request;
 import spark.Response;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Objects;
 
 public class GameHandler {
 

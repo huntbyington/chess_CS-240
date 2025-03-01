@@ -1,21 +1,20 @@
 package server;
 
-import com.google.gson.Gson;
 import dataaccess.*;
 import service.*;
 import spark.*;
 
 public class Server {
 
-    UserDAO userDAO;
-    GameDAO gameDAO;
-    AuthDAO authDAO;
+    final UserDAO userDAO;
+    final GameDAO gameDAO;
+    final AuthDAO authDAO;
 
-    UserService userService;
-    UserHandler userHandler;
+    final UserService userService;
+    final UserHandler userHandler;
 
-    GameService gameService;
-    GameHandler gameHandler;
+    final GameService gameService;
+    final GameHandler gameHandler;
 
 
     public Server() {

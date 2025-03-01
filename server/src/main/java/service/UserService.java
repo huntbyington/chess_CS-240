@@ -9,8 +9,8 @@ import java.util.UUID;
 
 public class UserService {
 
-    UserDAO userDAO;
-    AuthDAO authDAO;
+    final UserDAO userDAO;
+    final AuthDAO authDAO;
 
     public UserService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
