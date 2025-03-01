@@ -11,7 +11,7 @@ public class MemoryUserDataAccess implements UserDAO {
     @Override
     public void createUser(UserData userData) throws DataAccessException {
         if (userDataMap.containsKey(userData.username())) {
-            throw new DataAccessException("Username already exists: " + userData.username());
+            throw new DataAccessException("Username already exists");
         }
         userDataMap.put(userData.username(), userData);
     }

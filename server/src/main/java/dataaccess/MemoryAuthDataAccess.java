@@ -22,7 +22,7 @@ public class MemoryAuthDataAccess implements AuthDAO {
     public void deleteAuth(String authToken) throws DataAccessException {
         AuthData result = authTokenMap.remove(authToken);
         if (result == null) {
-            throw new DataAccessException("AuthToken does not exist");
+            throw new DataAccessException("Incorrect Authorization");
         }
     }
 

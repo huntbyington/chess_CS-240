@@ -18,6 +18,10 @@ public class UserService {
     }
 
     public AuthData register(UserData user) throws DataAccessException {
+        if (Objects.equals(user.username(), "") || Objects.equals(user.password(), "")) {
+            throw new DataAccessException("Invalid Username or Password");
+        }
+
         userDAO.createUser(user);
 
         String authToken = UUID.randomUUID().toString();

@@ -18,22 +18,37 @@ public class UserHandler {
         UserHandler.userService = userService;
     }
 
+    private static String exceptionHandler(String eMessage, Response res) {
+        switch (eMessage) {
+            case "Invalid Username or Password" -> {
+                res.status(400);
+                return "{ \"message\": \"Error: bad request\" }";
+            }
+            case "Incorrect Authorization", "Incorrect Username or Password" -> {
+                res.status(401);
+                return "{ \"message\": \"Error: unauthorized\" }";
+            }
+            case "Username already exists" -> {
+                res.status(403);
+                return "{ \"message\": \"Error: already taken\" }";
+            }
+            case null, default -> {
+                res.status(500);
+                return "{ \"message\": \"Error: " + eMessage + "\" ";
+            }
+        }
+    }
+
     public static Object register(Request req, Response res) {
         try {
             var user = new Gson().fromJson(req.body(), UserData.class);
             AuthData authData;
             authData = userService.register(user);
 
-            if (Objects.equals(user.username(), "") || Objects.equals(user.password(), "")) {
-                res.status(400);
-                return "{ \"message\": \"Error: bad request\" }";
-            }
-
             res.status(200);
             return "{ \"username\":\"" + user.username() + "\", \"authToken\":\"" + authData.authToken() + "\" }";
         } catch (DataAccessException e) {
-            res.status(403);
-            return "{ \"message\": \"Error: already taken\" }";
+            return exceptionHandler(e.getMessage(), res);
         }
     }
 
@@ -46,8 +61,7 @@ public class UserHandler {
             res.status(200);
             return "{ \"username\":\"" + user.username() + "\", \"authToken\":\"" + authData.authToken() + "\" }";
         } catch (DataAccessException e) {
-            res.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
+            return exceptionHandler(e.getMessage(), res);
         }
     }
 
@@ -59,8 +73,7 @@ public class UserHandler {
             res.status(200);
             return "{}";
         } catch (DataAccessException e) {
-            res.status(401);
-            return "{ \"message\": \"Error: unauthorized\" }";
+            return exceptionHandler(e.getMessage(), res);
         }
     }
 
