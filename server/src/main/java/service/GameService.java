@@ -68,14 +68,16 @@ public class GameService {
 
         GameData newGameData;
         if (Objects.equals(playerColor, "WHITE")) {
-            if (Objects.equals(gameData.whiteUsername(), "")) {
+            if (Objects.equals(gameData.whiteUsername(), "")
+                    && !Objects.equals(gameData.blackUsername(), playerColor)) {
                 newGameData = new GameData(gameData.gameID(), authData.username(), gameData.blackUsername(),
                                             gameData.gameName(), gameData.game());
             } else {
                 throw new DataAccessException("Player Color Already Taken");
             }
         } else if (Objects.equals(playerColor, "BLACK")) {
-            if (Objects.equals(gameData.blackUsername(), "")) {
+            if (Objects.equals(gameData.blackUsername(), "")
+                    && !Objects.equals(gameData.whiteUsername(), playerColor)) {
                 newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), authData.username(),
                                             gameData.gameName(), gameData.game());
             } else {
