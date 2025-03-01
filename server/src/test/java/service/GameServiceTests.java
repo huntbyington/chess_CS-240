@@ -155,11 +155,8 @@ public class GameServiceTests {
             int gameID_1 = gameService.createGame("authToken", "myGame");
             int gameID_2 = gameService.createGame("authToken", "myGame2");
 
-            if (Objects.equals(memoryGameDataAccess.getGame(gameID_1).whiteUsername(), "")) {
-                gameService.joinGame("authToken2", "BLACK", gameID_1);
-            } else {
-                gameService.joinGame("authToken2", "WHITE", gameID_1);
-            }
+            gameService.joinGame("authToken", "WHITE", gameID_1);
+            gameService.joinGame("authToken2", "WHITE", gameID_1);
 
             assert false;
         } catch (DataAccessException e) {
