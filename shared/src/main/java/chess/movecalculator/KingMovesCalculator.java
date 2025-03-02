@@ -6,29 +6,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class KingMovesCalculator implements PieceMovesCalculator{
+
+    private final int[][] moveLogic = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
+
     public Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPiece currPiece = board.getPiece(myPosition);
         int myTeam = (currPiece.getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1;
-        int[][] moveLogic = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
 
         //Creates a collection of spaces the king can't move to
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
-                Collection<ChessMove> badMoves = new ArrayList<>();
                 ChessPosition newPosition = new ChessPosition(i,j);
-                ChessPiece newPiece = board.getPiece(newPosition);
-                if(newPiece != null) {
-                    int pieceTeam = (newPiece.getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1;
-                    if (myTeam != pieceTeam) {
-                        if (newPiece.getPieceType() == ChessPiece.PieceType.KING) {
-                            badMoves.addAll(kingSpecCase(newPosition));
-                        } else {
-                            badMoves.addAll(newPiece.pieceMoves(board, newPosition));
-                        }
-                    }
-                    legalMove(board, myPosition, moveLogic, badMoves);
-                }
+                getBadMoves(board, myPosition, newPosition, myTeam);
             }
         }
 
@@ -40,6 +30,22 @@ public class KingMovesCalculator implements PieceMovesCalculator{
         }
 
         return moves;
+    }
+
+    private void getBadMoves (ChessBoard board,ChessPosition myPosition , ChessPosition newPosition, int myTeam) {
+        Collection<ChessMove> badMoves = new ArrayList<>();
+        ChessPiece newPiece = board.getPiece(newPosition);
+        if(newPiece != null) {
+            int pieceTeam = (newPiece.getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1;
+            if (myTeam != pieceTeam) {
+                if (newPiece.getPieceType() == ChessPiece.PieceType.KING) {
+                    badMoves.addAll(kingSpecCase(newPosition));
+                } else {
+                    badMoves.addAll(newPiece.pieceMoves(board, newPosition));
+                }
+            }
+            legalMove(board, myPosition, moveLogic, badMoves);
+        }
     }
 
     //Compares badMoves and possible moves, doesn't add the possible moves contained within bad moves

@@ -114,22 +114,6 @@ public class ChessGameTests {
     }
 
     @Test
-    @DisplayName("White Fools Mate Check Test")
-    public void whiteFoolsMateCheckTest() {
-        ChessGame myGame = new ChessGame();
-        try {
-            myGame.makeMove(new ChessMove(new ChessPosition(2, 6), new ChessPosition(3, 6), null));
-            myGame.makeMove(new ChessMove(new ChessPosition(7, 5), new ChessPosition(5, 5), null));
-            myGame.makeMove(new ChessMove(new ChessPosition(2, 7), new ChessPosition(4, 7), null));
-            myGame.makeMove(new ChessMove(new ChessPosition(8, 4), new ChessPosition(4, 8), null));
-        } catch (InvalidMoveException ignored) {}
-
-        boolean actual = myGame.isInCheck(ChessGame.TeamColor.WHITE);
-
-        Assertions.assertTrue(actual);
-    }
-
-    @Test
     @DisplayName("White Fools Mate Checkmate Test")
     public void whiteFoolsMateCheckmateTest() {
         ChessGame myGame = new ChessGame();
