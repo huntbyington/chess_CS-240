@@ -134,15 +134,15 @@ public class GameServiceTests {
     public void joinGameCorrectUser() throws DataAccessException {
         memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
         memoryAuthDataAccess.createAuth(new AuthData("authToken2", "username2"));
-        int gameID_1 = gameService.createGame("authToken", "myGame");
-        int gameID_2 = gameService.createGame("authToken", "myGame2");
+        int gameID1 = gameService.createGame("authToken", "myGame");
+        int gameID2 = gameService.createGame("authToken", "myGame2");
 
-        if (Objects.equals(memoryGameDataAccess.getGame(gameID_1).whiteUsername(), "")) {
-            gameService.joinGame("authToken2", "WHITE", gameID_1);
-            assert Objects.equals(memoryGameDataAccess.getGame(gameID_1).whiteUsername(), "username2");
+        if (Objects.equals(memoryGameDataAccess.getGame(gameID1).whiteUsername(), "")) {
+            gameService.joinGame("authToken2", "WHITE", gameID1);
+            assert Objects.equals(memoryGameDataAccess.getGame(gameID1).whiteUsername(), "username2");
         } else {
-            gameService.joinGame("authToken2", "BLACK", gameID_1);
-            assert  Objects.equals(memoryGameDataAccess.getGame(gameID_1).blackUsername(), "username2");
+            gameService.joinGame("authToken2", "BLACK", gameID1);
+            assert  Objects.equals(memoryGameDataAccess.getGame(gameID1).blackUsername(), "username2");
         }
     }
 
@@ -152,11 +152,11 @@ public class GameServiceTests {
         try {
             memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
             memoryAuthDataAccess.createAuth(new AuthData("authToken2", "username2"));
-            int gameID_1 = gameService.createGame("authToken", "myGame");
-            int gameID_2 = gameService.createGame("authToken", "myGame2");
+            int gameID1 = gameService.createGame("authToken", "myGame");
+            int gameID2 = gameService.createGame("authToken", "myGame2");
 
-            gameService.joinGame("authToken", "WHITE", gameID_1);
-            gameService.joinGame("authToken2", "WHITE", gameID_1);
+            gameService.joinGame("authToken", "WHITE", gameID1);
+            gameService.joinGame("authToken2", "WHITE", gameID1);
 
             assert false;
         } catch (DataAccessException e) {
@@ -170,10 +170,10 @@ public class GameServiceTests {
         try {
             memoryAuthDataAccess.createAuth(new AuthData("authToken", "username"));
             memoryAuthDataAccess.createAuth(new AuthData("authToken2", "username2"));
-            int gameID_1 = gameService.createGame("authToken", "myGame");
-            int gameID_2 = gameService.createGame("authToken", "myGame2");
+            int gameID1 = gameService.createGame("authToken", "myGame");
+            int gameID2 = gameService.createGame("authToken", "myGame2");
 
-            gameService.joinGame("authToken2", "", gameID_1);
+            gameService.joinGame("authToken2", "", gameID1);
 
             assert false;
         } catch (DataAccessException e) {

@@ -1,4 +1,4 @@
-package chess.moveCalculator;
+package chess.movecalculator;
 
 import chess.*;
 
@@ -15,17 +15,23 @@ public class KnightMovesCalculator implements PieceMovesCalculator{
         int[][] moveLogic = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{-1,2},{1,-2},{-1,-2}};
         for (int[] ints : moveLogic) {
             ChessPosition newPosition = new ChessPosition((myPosition.getRow() + ints[0]), (myPosition.getColumn() + ints[1]));
-            if (newPosition.getRow() > 8 || newPosition.getRow() < 1 || newPosition.getColumn() > 8 || newPosition.getColumn() < 1) {
-                continue;
-            }
-            if (validMoveCheck(board.getPiece(newPosition), myTeam)) {
-                moves.add(new ChessMove(myPosition, newPosition, null));
-            }
+            validMove(board, myPosition, newPosition, myTeam, moves);
         }
         return moves;
     }
+
+    private void validMove (ChessBoard board, ChessPosition myPosition, ChessPosition newPosition,
+                            int myTeam, Collection<ChessMove> moves) {
+        if (newPosition.getRow() > 8 || newPosition.getRow() < 1 || newPosition.getColumn() > 8 || newPosition.getColumn() < 1) {
+            return;
+        }
+        if (pieceAtPos(board.getPiece(newPosition), myTeam)) {
+            moves.add(new ChessMove(myPosition, newPosition, null));
+        }
+    }
+
     //returns true if the knight can move here
-    private boolean validMoveCheck (ChessPiece pieceAtNewPos, int myTeam) {
+    private boolean pieceAtPos(ChessPiece pieceAtNewPos, int myTeam) {
         if (pieceAtNewPos == null) {
             return true;
         }

@@ -1,4 +1,4 @@
-package chess.moveCalculator;
+package chess.movecalculator;
 import chess.*;
 
 import java.util.ArrayList;
@@ -33,7 +33,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         //Check diagonal capture
         if (myPosition.getColumn() != 8) {
             newPosition = new ChessPosition((myPosition.getRow() + myTeam), (myPosition.getColumn() + 1));
-            if ((board.getPiece(newPosition) != null) && (((board.getPiece(newPosition).getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1) != myTeam)) {
+            if ((board.getPiece(newPosition) != null) &&
+                    (((board.getPiece(newPosition).getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1) != myTeam)) {
                 for (ChessPiece.PieceType currProm : promotion) {
                     moves.add(new ChessMove(myPosition, newPosition, currProm));
                 }
@@ -42,7 +43,8 @@ public class PawnMovesCalculator implements PieceMovesCalculator {
         //Check diagonal capture
         if (myPosition.getColumn() != 1) {
             newPosition = new ChessPosition((myPosition.getRow() + myTeam), (myPosition.getColumn() - 1));
-            if ((board.getPiece(newPosition) != null) && (((board.getPiece(newPosition).getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1) != myTeam)) {
+            if ((board.getPiece(newPosition) != null) &&
+                    (((board.getPiece(newPosition).getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1) != myTeam)) {
                 for (ChessPiece.PieceType currProm : promotion) {
                     moves.add(new ChessMove(myPosition, newPosition, currProm));
                 }
