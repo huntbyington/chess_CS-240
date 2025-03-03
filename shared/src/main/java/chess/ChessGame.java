@@ -151,17 +151,7 @@ public class ChessGame {
         return false;
     }
 
-    /**
-     * Determines if the given team is in checkmate
-     *
-     * @param teamColor which team to check for checkmate
-     * @return True if the specified team is in checkmate
-     */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) {
-            return false;
-        }
-
+    private boolean checkPossibleKingMoves(TeamColor teamColor) {
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
                 ChessPosition newPosition = new ChessPosition(i,j);
@@ -175,6 +165,20 @@ public class ChessGame {
         }
 
         return true;
+    }
+
+    /**
+     * Determines if the given team is in checkmate
+     *
+     * @param teamColor which team to check for checkmate
+     * @return True if the specified team is in checkmate
+     */
+    public boolean isInCheckmate(TeamColor teamColor) {
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+
+        return checkPossibleKingMoves(teamColor);
     }
 
     // Returns true if there is a move contained within moves that will make the given team not in check
@@ -210,19 +214,7 @@ public class ChessGame {
             return false;
         }
 
-        for (int i = 1; i < 9; i++) {
-            for (int j = 1; j < 9; j++) {
-                ChessPosition newPosition = new ChessPosition(i,j);
-                if (board.getPiece(newPosition) != null && board.getPiece(newPosition).getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = board.getPiece(newPosition).pieceMoves(board, newPosition);
-                    if(doesEndCheck(moves, teamColor)) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true;
+        return checkPossibleKingMoves(teamColor);
     }
 
     /**

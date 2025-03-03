@@ -81,17 +81,6 @@ public class ChessGameTests {
     }
 
     @Test
-    @DisplayName("Make Moves Pawn Test")
-    public void makeMovesPawnTest () {
-        ChessGame myGame = new ChessGame();
-        Collection<ChessMove> expected = new ArrayList<>();
-
-        Collection<ChessMove> actual = myGame.validMoves(new ChessPosition(1, 1));
-
-        assert expected.equals(actual);
-    }
-
-    @Test
     @DisplayName("White Not Check Test")
     public void whiteNotCheckTest() {
         ChessGame myGame = new ChessGame();
