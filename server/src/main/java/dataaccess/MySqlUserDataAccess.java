@@ -40,7 +40,7 @@ public class MySqlUserDataAccess implements UserDAO{
     public void createUser(UserData userData) throws DataAccessException {
         try {
             var conn = getConnection();
-            var insertUserCommand = "INSERT INTO chess (username, password, email) VALUES (?, ?, ?)";
+            var insertUserCommand = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
             var insertUserStatement = conn.prepareStatement(insertUserCommand);
 
             insertUserStatement.setString(1, userData.username());
@@ -61,7 +61,15 @@ public class MySqlUserDataAccess implements UserDAO{
 
     @Override
     public void clear() throws DataAccessException {
+        try {
+            var conn = getConnection();
+            var clearUsersCommand = "DELETE FROM users";
+            var clearUsersStatement = conn.prepareStatement(clearUsersCommand);
 
+            clearUsersStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String hashPassword(String clearTextPassword) {
