@@ -33,6 +33,14 @@ public class MySqlUserDataAccess implements UserDAO{
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
+
+        try {
+            getUser(userData.username());
+
+            throw new DataAccessException("Username already exists");
+        } catch (DataAccessException ignored) {
+        }
+
         try {
             var conn = getConnection();
             var insertUserCommand = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
@@ -46,19 +54,25 @@ public class MySqlUserDataAccess implements UserDAO{
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
+        PreparedStatement getUserStatement = null;
+        ResultSet results = null;
+
         try {
             var conn = getConnection();
             var getUserCommand = "SELECT username, password, email FROM users WHERE username=?";
-            var getUserStatement = conn.prepareStatement(getUserCommand);
+            getUserStatement = conn.prepareStatement(getUserCommand);
 
             getUserStatement.setString(1, username);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
-            var results = getUserStatement.executeQuery();
+        try {
+            results = getUserStatement.executeQuery();
 
             results.next();
             var password = results.getString("password");
@@ -66,7 +80,7 @@ public class MySqlUserDataAccess implements UserDAO{
 
             return new UserData(username, password, email);
         } catch (SQLException e) {
-            throw new DataAccessException("Username already exists");
+            throw new DataAccessException("Username doesn't exist");
         }
     }
 
