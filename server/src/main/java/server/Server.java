@@ -20,7 +20,7 @@ public class Server {
     public Server() {
         authDAO = new MemoryAuthDataAccess();
 
-        userDAO = new MemoryUserDataAccess();
+        userDAO = new MySqlUserDataAccess();
         userService = new UserService(userDAO, authDAO);
         userHandler = new UserHandler(userService);
 
