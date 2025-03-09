@@ -1,16 +1,11 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.sql.*;
 
 import static dataaccess.DatabaseManager.*;
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 
 public class MySqlUserDataAccess implements UserDAO{
@@ -56,7 +51,23 @@ public class MySqlUserDataAccess implements UserDAO{
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        return null;
+        try {
+            var conn = getConnection();
+            var getUserCommand = "SELECT username, password, email FROM users WHERE username=?";
+            var getUserStatement = conn.prepareStatement(getUserCommand);
+
+            getUserStatement.setString(1, username);
+
+            var results = getUserStatement.executeQuery();
+
+            results.next();
+            var password = results.getString("password");
+            var email = results.getString("email");
+
+            return new UserData(username, password, email);
+        } catch (SQLException e) {
+            throw new DataAccessException("Username already exists");
+        }
     }
 
     @Override
