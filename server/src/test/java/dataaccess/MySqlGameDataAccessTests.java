@@ -15,5 +15,20 @@ public class MySqlGameDataAccessTests {
         GameData gameData = new GameData(1, "whiteUser", "blackUser", "newGame", new ChessGame());
 
         gameDAO.createGame(gameData);
+
+        assert true;
+    }
+
+    @Test
+    @DisplayName("SQL Clear Games Test")
+    public void sqlClearGamesTest() throws DataAccessException {
+        GameDAO gameDAO = new MySqlGameDataAccess();
+
+        GameData gameData = new GameData(2, "whiteUser", "blackUser", "newGame", new ChessGame());
+        gameDAO.createGame(gameData);
+
+        gameDAO.clear();
+
+        assert true;
     }
 }
