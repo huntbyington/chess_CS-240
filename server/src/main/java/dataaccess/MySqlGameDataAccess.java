@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.GameData;
 
+import com.google.gson.Gson;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +36,23 @@ public class MySqlGameDataAccess implements GameDAO{
 
     @Override
     public void createGame(GameData gameData) throws DataAccessException {
+        try {
+            var conn = getConnection();
+            var insertGameCommand = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?, ?)";
+            var insertGameStatement = conn.prepareStatement(insertGameCommand);
 
+            var json = new Gson().toJson(gameData.game());
+
+            insertGameStatement.setInt(1, gameData.gameID());
+            insertGameStatement.setString(2, gameData.whiteUsername());
+            insertGameStatement.setString(3, gameData.blackUsername());
+            insertGameStatement.setString(4, gameData.gameName());
+            insertGameStatement.setString(5, json);
+
+            insertGameStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
