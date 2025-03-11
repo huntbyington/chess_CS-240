@@ -5,9 +5,9 @@ import chess.*;
 import java.util.Collection;
 
 public interface PieceMovesCalculator {
-    Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition);
+//    Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition);
 
-    default void checkMoveLogic(ChessBoard board, ChessPosition myPosition, int[][] moveLogic, int myTeam, Collection<ChessMove> moves) {
+    static void checkMoveLogic(ChessBoard board, ChessPosition myPosition, int[][] moveLogic, int myTeam, Collection<ChessMove> moves) {
         for (int[] ints : moveLogic) {
             //Set piece check false until piece or border is seen
             boolean pieceCheck = false;
@@ -31,7 +31,7 @@ public interface PieceMovesCalculator {
         }
     }
 
-    default boolean validMoveCheck (ChessPiece pieceAtNewPos) {
+    static boolean validMoveCheck(ChessPiece pieceAtNewPos) {
         return pieceAtNewPos == null;
     }
 }

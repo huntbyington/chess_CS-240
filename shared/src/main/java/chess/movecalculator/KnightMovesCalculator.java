@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class KnightMovesCalculator implements PieceMovesCalculator{
-    public Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition) {
+    public static Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPiece currPiece = board.getPiece(myPosition);
         int myTeam = (currPiece.getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1;
@@ -20,8 +20,8 @@ public class KnightMovesCalculator implements PieceMovesCalculator{
         return moves;
     }
 
-    private void validMove (ChessBoard board, ChessPosition myPosition, ChessPosition newPosition,
-                            int myTeam, Collection<ChessMove> moves) {
+    private static void validMove(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition,
+                                  int myTeam, Collection<ChessMove> moves) {
         if (newPosition.getRow() > 8 || newPosition.getRow() < 1 || newPosition.getColumn() > 8 || newPosition.getColumn() < 1) {
             return;
         }
@@ -31,7 +31,7 @@ public class KnightMovesCalculator implements PieceMovesCalculator{
     }
 
     //returns true if the knight can move here
-    private boolean pieceAtPos(ChessPiece pieceAtNewPos, int myTeam) {
+    private static boolean pieceAtPos(ChessPiece pieceAtNewPos, int myTeam) {
         if (pieceAtNewPos == null) {
             return true;
         }

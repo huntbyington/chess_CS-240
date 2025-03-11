@@ -7,18 +7,18 @@ import java.util.Collection;
 
 public class KingMovesCalculator implements PieceMovesCalculator{
 
-    private final int[][] moveLogic = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
-
-    public Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition) {
+    public static Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
         ChessPiece currPiece = board.getPiece(myPosition);
         int myTeam = (currPiece.getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1;
+
+        int[][] moveLogic = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
 
         //Creates a collection of spaces the king can't move to
         for (int i = 1; i < 9; i++) {
             for (int j = 1; j < 9; j++) {
                 ChessPosition newPosition = new ChessPosition(i,j);
-                getBadMoves(board, myPosition, newPosition, myTeam);
+                getBadMoves(board, myPosition, newPosition, myTeam, moveLogic);
             }
         }
 
@@ -32,7 +32,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
         return moves;
     }
 
-    private void getBadMoves (ChessBoard board,ChessPosition myPosition , ChessPosition newPosition, int myTeam) {
+    private static void getBadMoves(ChessBoard board, ChessPosition myPosition, ChessPosition newPosition, int myTeam, int[][] moveLogic) {
         Collection<ChessMove> badMoves = new ArrayList<>();
         ChessPiece newPiece = board.getPiece(newPosition);
         if(newPiece != null) {
@@ -49,7 +49,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
     }
 
     //Compares badMoves and possible moves, doesn't add the possible moves contained within bad moves
-    private void legalMove(ChessBoard board, ChessPosition myPosition, int[][] moveLogic, Collection<ChessMove> badMoves){
+    private static void legalMove(ChessBoard board, ChessPosition myPosition, int[][] moveLogic, Collection<ChessMove> badMoves){
         ChessPiece currPiece = board.getPiece(myPosition);
         for (int i = 0; i < moveLogic.length; i++) {
             ChessPosition newPosition = new ChessPosition((myPosition.getRow() + moveLogic[i][0]), (myPosition.getColumn() + moveLogic[i][1]));
@@ -74,7 +74,7 @@ public class KingMovesCalculator implements PieceMovesCalculator{
         }
     }
 
-    private Collection<ChessMove> kingSpecCase(ChessPosition kingPos) {
+    private static Collection<ChessMove> kingSpecCase(ChessPosition kingPos) {
         Collection<ChessMove> badMoves = new ArrayList<>();
         int[][] kingLogic = {{1,0},{-1,0},{0,1},{0,-1},{1,1},{1,-1},{-1,1},{-1,-1}};
         for (int[] ints : kingLogic) {

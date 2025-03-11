@@ -15,33 +15,33 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final ChessPiece.PieceType type;
-    private final PieceMovesCalculator movementType;
+//    private final PieceMovesCalculator movementType;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
-        switch (type) {
-            case PAWN:
-                movementType = new PawnMovesCalculator();
-                break;
-            case KNIGHT:
-                movementType = new KnightMovesCalculator();
-                break;
-            case BISHOP:
-                movementType = new BishopMovesCalculator();
-                break;
-            case ROOK:
-                movementType = new RookMovesCalculator();
-                break;
-            case QUEEN:
-                movementType = new QueenMovesCalculator();
-                break;
-            case KING:
-                movementType = new KingMovesCalculator();
-                break;
-            default:
-                throw new NullPointerException("Piece Type Doesn't Exist");
-        }
+//        switch (type) {
+//            case PAWN:
+//                movementType = new PawnMovesCalculator();
+//                break;
+//            case KNIGHT:
+//                movementType = new KnightMovesCalculator();
+//                break;
+//            case BISHOP:
+//                movementType = new BishopMovesCalculator();
+//                break;
+//            case ROOK:
+//                movementType = new RookMovesCalculator();
+//                break;
+//            case QUEEN:
+//                movementType = new QueenMovesCalculator();
+//                break;
+//            case KING:
+//                movementType = new KingMovesCalculator();
+//                break;
+//            default:
+//                throw new NullPointerException("Piece Type Doesn't Exist");
+//        }
     }
 
     /**
@@ -78,7 +78,14 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return movementType.checkMoves(board, myPosition);
+        return switch (type) {
+            case PAWN -> PawnMovesCalculator.checkMoves(board, myPosition);
+            case KNIGHT -> KnightMovesCalculator.checkMoves(board, myPosition);
+            case BISHOP -> BishopMovesCalculator.checkMoves(board, myPosition);
+            case ROOK -> RookMovesCalculator.checkMoves(board, myPosition);
+            case QUEEN -> QueenMovesCalculator.checkMoves(board, myPosition);
+            case KING -> KingMovesCalculator.checkMoves(board, myPosition);
+        };
     }
 
     @Override
