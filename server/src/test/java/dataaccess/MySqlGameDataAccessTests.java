@@ -55,6 +55,7 @@ public class MySqlGameDataAccessTests {
         assert Objects.equals(gameData.whiteUsername(), actual.whiteUsername());
         assert Objects.equals(gameData.blackUsername(), actual.blackUsername());
         assert Objects.equals(gameData.gameName(), actual.gameName());
+        assert gameData.game().equals(actual.game());
     }
 
     @Test
@@ -73,5 +74,6 @@ public class MySqlGameDataAccessTests {
         assert Objects.equals(gameData.whiteUsername(), actual.whiteUsername());
         assert Objects.equals(gameData.blackUsername(), actual.blackUsername());
         assert Objects.equals(gameData.gameName(), actual.gameName());
+        assert gameData.game().equals(actual.game());
     }
 }
