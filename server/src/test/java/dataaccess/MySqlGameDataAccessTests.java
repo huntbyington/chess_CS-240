@@ -6,6 +6,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 
 public class MySqlGameDataAccessTests {
@@ -70,11 +72,7 @@ public class MySqlGameDataAccessTests {
 
         GameData actual = gameDAO.getGame(2);
 
-        assert gameData.gameID() == actual.gameID();
-        assert Objects.equals(gameData.whiteUsername(), actual.whiteUsername());
-        assert Objects.equals(gameData.blackUsername(), actual.blackUsername());
-        assert Objects.equals(gameData.gameName(), actual.gameName());
-        assert gameData.game().equals(actual.game());
+        assert gameData.equals(actual);
     }
 
     @Test
@@ -88,5 +86,44 @@ public class MySqlGameDataAccessTests {
         } catch (DataAccessException e) {
             assert true;
         }
+    }
+
+    @Test
+    @DisplayName("SQL List Games Test")
+    public void sqlListGamesTest() throws DataAccessException {
+        GameDAO gameDAO = new MySqlGameDataAccess();
+
+        Collection<GameData> expected = new ArrayList<>();
+
+        GameData gameData = new GameData(1, "whiteUser", "blackUser", "newGame", new ChessGame());
+        expected.add(gameData);
+        gameDAO.createGame(gameData);
+
+        gameData = new GameData(2, "whiteUser2", "blackUser2", "newGame2", new ChessGame());
+        expected.add(gameData);
+        gameDAO.createGame(gameData);
+
+        Collection<GameData> actual = gameDAO.listGames("whiteUser");
+
+        int correct = 0;
+        for (GameData expectedGame : expected) {
+            for (GameData actualGame : actual) {
+                if (expectedGame.equals(actualGame)) {
+                    correct++;
+                }
+            }
+        }
+
+        assert correct == 2;
+    }
+
+    @Test
+    @DisplayName("SQL List Games Empty List Test")
+    public void sqlListGamesEmptyListTest() throws DataAccessException {
+        GameDAO gameDAO = new MySqlGameDataAccess();
+
+        Collection<GameData> expected = new ArrayList<>();
+
+        assert expected.equals(gameDAO.listGames("username"));
     }
 }
