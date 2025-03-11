@@ -121,11 +121,10 @@ public class MySqlGameDataAccess implements GameDAO{
 
                 gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
             }
-            
+
             return gameList;
         } catch (SQLException e) {
-            // Table is empty
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
