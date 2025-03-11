@@ -76,4 +76,17 @@ public class MySqlGameDataAccessTests {
         assert Objects.equals(gameData.gameName(), actual.gameName());
         assert gameData.game().equals(actual.game());
     }
+
+    @Test
+    @DisplayName("SQL Get Nonexistent Game Test")
+    public void sqlGetNonexistentGameTest() {
+        try {
+            GameDAO gameDAO = new MySqlGameDataAccess();
+            gameDAO.getGame(1);
+
+            assert false;
+        } catch (DataAccessException e) {
+            assert true;
+        }
+    }
 }
