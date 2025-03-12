@@ -83,15 +83,12 @@ public class MySqlGameDataAccessTests {
 
     @Test
     @DisplayName("SQL Get Nonexistent Game Test")
-    public void sqlGetNonexistentGameTest() {
-        try {
-            GameDAO gameDAO = new MySqlGameDataAccess();
-            gameDAO.getGame(1);
+    public void sqlGetNonexistentGameTest() throws DataAccessException {
+        GameDAO gameDAO = new MySqlGameDataAccess();
 
-            assert false;
-        } catch (DataAccessException e) {
-            assert true;
-        }
+        GameData gameData = gameDAO.getGame(1);
+
+        assert gameData == null;
     }
 
     @Test

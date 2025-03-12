@@ -74,15 +74,11 @@ public class MySqlUserDataAccessTests {
 
     @Test
     @DisplayName("SQL Get Nonexistent User Test")
-    public void sqlGetNonexistentUserTest() {
-        try {
-            UserDAO userDAO = new MySqlUserDataAccess();
+    public void sqlGetNonexistentUserTest() throws DataAccessException {
+        UserDAO userDAO = new MySqlUserDataAccess();
 
-            userDAO.getUser("fakeUser");
+        UserData userData = userDAO.getUser("fakeUser");
 
-            assert false;
-        } catch (DataAccessException e) {
-            assert true;
-        }
+        assert userData == null;
     }
 }
