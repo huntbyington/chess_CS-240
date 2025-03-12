@@ -15,4 +15,16 @@ public class MySqlAuthDataAccessTests {
 
         assert true;
     }
+
+    @Test
+    @DisplayName("SQL Clear Auths Test")
+    public void sqlClearAuthsTest() throws DataAccessException {
+        AuthDAO authDAO = new MySqlAuthDataAccess();
+
+        authDAO.createAuth(new AuthData("authToken", "username"));
+
+        authDAO.clear();
+
+        assert true;
+    }
 }
