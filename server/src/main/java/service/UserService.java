@@ -40,7 +40,7 @@ public class UserService {
         }
 
         if (Objects.equals(user.username(), queryUser.username())) {
-            if (checkPassword(user.password(), queryUser.password())) {
+            if (userDAO.checkPassword(user.password(), queryUser.password())) {
                 String authToken = UUID.randomUUID().toString();
                 AuthData authData = new AuthData(authToken, user.username());
                 authDAO.createAuth(authData);
@@ -58,9 +58,5 @@ public class UserService {
     public void clear() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();
-    }
-
-    private boolean checkPassword(String userPassword, String dbPassword) {
-        return BCrypt.checkpw(userPassword, dbPassword);
     }
 }

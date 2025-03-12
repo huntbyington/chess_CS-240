@@ -22,6 +22,11 @@ public class MemoryUserDataAccess implements UserDAO {
     }
 
     @Override
+    public boolean checkPassword(String userPassword, String dbPassword) {
+        return userPassword.equals(dbPassword);
+    }
+
+    @Override
     public void clear() throws DataAccessException {
         userDataMap.clear();
     }

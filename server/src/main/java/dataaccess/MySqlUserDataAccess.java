@@ -83,6 +83,11 @@ public class MySqlUserDataAccess implements UserDAO{
     }
 
     @Override
+    public boolean checkPassword(String userPassword, String dbPassword) {
+        return BCrypt.checkpw(userPassword, dbPassword);
+    }
+
+    @Override
     public void clear() throws DataAccessException {
         try {
             var conn = getConnection();
