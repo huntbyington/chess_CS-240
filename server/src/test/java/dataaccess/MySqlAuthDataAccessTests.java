@@ -57,4 +57,56 @@ public class MySqlAuthDataAccessTests {
 
         assert authData == null;
     }
+
+    @Test
+    @DisplayName("SQL Delete Auth Test")
+    public void sqlDeleteAuthTest() {
+        try {
+            AuthDAO authDAO = new MySqlAuthDataAccess();
+
+            AuthData authData = new AuthData("authToken", "username");
+            authDAO.createAuth(authData);
+
+            authDAO.deleteAuth("authToken");
+
+            assert true;
+        } catch (DataAccessException e) {
+            assert false;
+        }
+    }
+
+    @Test
+    @DisplayName("SQL Delete Auth When Multiple Auths Test")
+    public void sqlDeleteAuthWhenMultipleAuthsTest() {
+        try {
+            AuthDAO authDAO = new MySqlAuthDataAccess();
+
+            AuthData authData = new AuthData("authToken", "username");
+            authDAO.createAuth(authData);
+            authData = new AuthData("authToken2", "username2");
+            authDAO.createAuth(authData);
+
+            authDAO.deleteAuth("authToken");
+
+            AuthData actual = authDAO.getAuth("authToken2");
+
+            assert authData.equals(actual);
+        } catch (DataAccessException e) {
+            assert false;
+        }
+    }
+
+    @Test
+    @DisplayName("SQL Delete Nonexistent Auth Test")
+    public void sqlDeleteNonexistentAuthTest() {
+        try {
+            AuthDAO authDAO = new MySqlAuthDataAccess();
+
+            authDAO.deleteAuth("authToken");
+
+            assert false;
+        } catch (DataAccessException e) {
+            assert true;
+        }
+    }
 }
