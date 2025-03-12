@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class RookMovesCalculator implements PieceMovesCalculator{
 
-    private static final int[][] moveLogic = {{1,0},{-1,0},{0,1},{0,-1}};
+    private static final int[][] MOVE_LOGIC = {{1,0},{-1,0},{0,1},{0,-1}};
 
     public static Collection<ChessMove> checkMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
@@ -15,7 +15,7 @@ public class RookMovesCalculator implements PieceMovesCalculator{
         int myTeam = (currPiece.getTeamColor() == ChessGame.TeamColor.BLACK) ? -1 : 1;
 
         //Check Rook moves using moveLogic
-        PieceMovesCalculator.checkMoveLogic(board, myPosition, moveLogic, myTeam, moves);
+        PieceMovesCalculator.checkMoveLogic(board, myPosition, MOVE_LOGIC, myTeam, moves);
 
         return moves;
     }
