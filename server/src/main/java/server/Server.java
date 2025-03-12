@@ -24,7 +24,7 @@ public class Server {
         userService = new UserService(userDAO, authDAO);
         userHandler = new UserHandler(userService);
 
-        gameDAO = new MemoryGameDataAccess();
+        gameDAO = new MySqlGameDataAccess();
         gameService = new GameService(gameDAO, authDAO);
         gameHandler = new GameHandler(gameService);
     }
