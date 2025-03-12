@@ -1,6 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import model.GameData;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
@@ -125,5 +128,26 @@ public class MySqlGameDataAccessTests {
         Collection<GameData> expected = new ArrayList<>();
 
         assert expected.equals(gameDAO.listGames("username"));
+    }
+
+    @Test
+    @DisplayName("SQL Update Games Test")
+    public void sqlUpdateGamesTest() throws DataAccessException {
+        try {
+            GameDAO gameDAO = new MySqlGameDataAccess();
+
+            ChessGame myGame = new ChessGame();
+
+            GameData gameData = new GameData(1, "whiteUser", "blackUser", "newGame", myGame);
+            gameDAO.createGame(gameData);
+
+            myGame.makeMove(new ChessMove(new ChessPosition(2,1), new ChessPosition(3,1), null));
+
+            gameDAO.updateGame(new GameData(1, "whiteUser", "blackUser", "newGame", myGame));
+
+            assert myGame.equals(gameDAO.getGame(1).game());
+        } catch (InvalidMoveException e) {
+            assert false : "Invalid Move";
+        }
     }
 }
