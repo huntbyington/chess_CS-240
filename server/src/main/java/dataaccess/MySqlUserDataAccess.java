@@ -28,12 +28,10 @@ public class MySqlUserDataAccess implements UserDAO{
         } catch (DataAccessException | SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
     public void createUser(UserData userData) throws DataAccessException {
-
         try {
             getUser(userData.username());
 

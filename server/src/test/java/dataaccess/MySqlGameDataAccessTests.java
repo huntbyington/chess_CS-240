@@ -24,6 +24,7 @@ public class MySqlGameDataAccessTests {
     @Test
     @DisplayName("SQL Create Game Test")
     public void sqlCreateGameTest() throws DataAccessException {
+        // Test used for initial testing of createGame function
         GameDAO gameDAO = new MySqlGameDataAccess();
 
         GameData gameData = new GameData(1, "whiteUser", "blackUser", "newGame", new ChessGame());
@@ -36,6 +37,7 @@ public class MySqlGameDataAccessTests {
     @Test
     @DisplayName("SQL Clear Games Test")
     public void sqlClearGamesTest() throws DataAccessException {
+        // Test used for initial testing of clear function
         GameDAO gameDAO = new MySqlGameDataAccess();
 
         GameData gameData = new GameData(2, "whiteUser", "blackUser", "newGame", new ChessGame());

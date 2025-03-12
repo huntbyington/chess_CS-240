@@ -24,8 +24,7 @@ public class MemoryGameDataAccess implements GameDAO{
 
     @Override
     public Collection<GameData> listGames(String username) throws DataAccessException {
-        Collection<GameData> gameList = new ArrayList<>(gameDataMap.values());
-        return gameList;
+        return new ArrayList<>(gameDataMap.values());
     }
 
     @Override
