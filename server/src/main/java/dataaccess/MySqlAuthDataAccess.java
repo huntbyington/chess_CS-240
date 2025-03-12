@@ -2,7 +2,10 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.UserData;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static dataaccess.DatabaseManager.createDatabase;
@@ -47,7 +50,29 @@ public class MySqlAuthDataAccess implements AuthDAO{
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        return null;
+        PreparedStatement getUserStatement = null;
+        ResultSet results = null;
+
+        try {
+            var conn = getConnection();
+            var getUserCommand = "SELECT authToken, username FROM auths WHERE authToken=?";
+            getUserStatement = conn.prepareStatement(getUserCommand);
+
+            getUserStatement.setString(1, authToken);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            results = getUserStatement.executeQuery();
+
+            results.next();
+            var username = results.getString("username");
+
+            return new AuthData(authToken, username);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 
     @Override
