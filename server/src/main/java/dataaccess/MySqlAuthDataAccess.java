@@ -36,13 +36,13 @@ public class MySqlAuthDataAccess implements AuthDAO{
     public void createAuth(AuthData authData) throws DataAccessException {
         try {
             var conn = getConnection();
-            var insertGameCommand = "INSERT INTO auths (authToken, username) VALUES (?, ?)";
-            var insertGameStatement = conn.prepareStatement(insertGameCommand);
+            var insertAuthCommand = "INSERT INTO auths (authToken, username) VALUES (?, ?)";
+            var insertAuthStatement = conn.prepareStatement(insertAuthCommand);
 
-            insertGameStatement.setString(1, authData.authToken());
-            insertGameStatement.setString(2, authData.username());
+            insertAuthStatement.setString(1, authData.authToken());
+            insertAuthStatement.setString(2, authData.username());
 
-            insertGameStatement.executeUpdate();
+            insertAuthStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -50,21 +50,21 @@ public class MySqlAuthDataAccess implements AuthDAO{
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        PreparedStatement getUserStatement = null;
+        PreparedStatement getAuthStatement = null;
         ResultSet results = null;
 
         try {
             var conn = getConnection();
             var getUserCommand = "SELECT authToken, username FROM auths WHERE authToken=?";
-            getUserStatement = conn.prepareStatement(getUserCommand);
+            getAuthStatement = conn.prepareStatement(getUserCommand);
 
-            getUserStatement.setString(1, authToken);
+            getAuthStatement.setString(1, authToken);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
         try {
-            results = getUserStatement.executeQuery();
+            results = getAuthStatement.executeQuery();
 
             results.next();
             var username = results.getString("username");
@@ -77,17 +77,31 @@ public class MySqlAuthDataAccess implements AuthDAO{
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
+        try {
+            var conn = getConnection();
+            var getAuthCommand = "DELETE FROM auths WHERE authToken=?";
+            PreparedStatement getAuthStatement = conn.prepareStatement(getAuthCommand);
 
+            getAuthStatement.setString(1, authToken);
+
+            int results = getAuthStatement.executeUpdate();;
+
+            if (results == 0) {
+                throw new DataAccessException("Incorrect Authorization");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void clear() throws DataAccessException {
         try {
             var conn = getConnection();
-            var clearGamesCommand = "DELETE FROM auths";
-            var clearGamesStatement = conn.prepareStatement(clearGamesCommand);
+            var clearAuthsCommand = "DELETE FROM auths";
+            var clearAuthsStatement = conn.prepareStatement(clearAuthsCommand);
 
-            clearGamesStatement.executeUpdate();
+            clearAuthsStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
