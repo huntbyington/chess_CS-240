@@ -123,10 +123,16 @@ public class GameServiceTests {
 
         Collection<GameData> gameList = gameService.listGames("authToken");
 
+        int counter = 0;
+
         for (GameData game : gameList) {
             // Assert returns false if expected game names are not in gameList
-            assert Objects.equals(game.gameName(), "myGame");
+            if (Objects.equals(game.gameName(), "myGame") || Objects.equals(game.gameName(), "myGame2")) {
+                counter ++;
+            }
         }
+
+        assert counter == 2;
     }
 
     @Test
