@@ -6,6 +6,7 @@ import chess.ChessPosition;
 import chess.InvalidMoveException;
 import model.GameData;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -15,8 +16,8 @@ import java.util.Objects;
 
 public class MySqlGameDataAccessTests {
 
-    @AfterAll
-    static void clearGameDatabase() throws DataAccessException {
+    @AfterEach
+    void clearGameDatabase() throws DataAccessException {
         GameDAO gameDAO = new MySqlGameDataAccess();
         gameDAO.clear();
     }
