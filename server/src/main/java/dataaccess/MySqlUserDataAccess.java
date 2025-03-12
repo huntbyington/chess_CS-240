@@ -50,7 +50,7 @@ public class MySqlUserDataAccess implements UserDAO{
 
             insertUserStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Username already exists");
         }
     }
 
@@ -78,7 +78,7 @@ public class MySqlUserDataAccess implements UserDAO{
 
             return new UserData(username, password, email);
         } catch (SQLException e) {
-            throw new DataAccessException("Username doesn't exist");
+            return null;
         }
     }
 

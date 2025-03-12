@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -38,8 +39,8 @@ public class UserService {
             throw new DataAccessException("Incorrect Username or Password");
         }
 
-        if (Objects.equals(queryUser.username(), user.username())) {
-            if (Objects.equals(queryUser.password(), user.password())) {
+        if (Objects.equals(user.username(), queryUser.username())) {
+            if (checkPassword(user.password(), queryUser.password())) {
                 String authToken = UUID.randomUUID().toString();
                 AuthData authData = new AuthData(authToken, user.username());
                 authDAO.createAuth(authData);
@@ -57,5 +58,9 @@ public class UserService {
     public void clear() throws DataAccessException {
         userDAO.clear();
         authDAO.clear();
+    }
+
+    private boolean checkPassword(String userPassword, String dbPassword) {
+        return BCrypt.checkpw(userPassword, dbPassword);
     }
 }

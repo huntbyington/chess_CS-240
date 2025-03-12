@@ -25,8 +25,8 @@ public class MySqlGameDataAccess implements GameDAO{
             var createTableCommand = """
                             CREATE TABLE IF NOT EXISTS games (
                             gameID INT NOT NULL PRIMARY KEY,
-                            whiteUsername VARCHAR(255) NOT NULL,
-                            blackUsername VARCHAR(255) NOT NULL,
+                            whiteUsername VARCHAR(255),
+                            blackUsername VARCHAR(255),
                             gameName VARCHAR(255) NOT NULL,
                             game longtext NOT NULL
                             );
@@ -88,7 +88,7 @@ public class MySqlGameDataAccess implements GameDAO{
 
             return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
         } catch (SQLException e) {
-            throw new DataAccessException("Game ID doesn't exist");
+            return null;
         }
     }
 
