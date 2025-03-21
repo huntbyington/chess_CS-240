@@ -26,8 +26,8 @@ public class PreloginUI {
         var result = "";
         while (!result.equals("quit")) {
             if (signedIn) {
-                System.out.println("Signed in true\n");
-                // Run post login
+                result = new PostloginUI(serverFacade).run();
+                continue;
             }
             printPrompt();
             String line = scanner.nextLine();
@@ -45,14 +45,6 @@ public class PreloginUI {
 
     private void printPrompt() {
         System.out.print("\n" + SET_TEXT_COLOR_WHITE + ">>> " + SET_TEXT_COLOR_GREEN);
-    }
-
-    private String help() {
-        return (SET_TEXT_COLOR_BLUE + "register <USERNAME> <PASSWORD> <EMAIL> " + SET_TEXT_COLOR_MAGENTA + "- to create an account\n" +
-                SET_TEXT_COLOR_BLUE + "login <USERNAME> <PASSWORD> " + SET_TEXT_COLOR_MAGENTA + "- to play chess\n" +
-                SET_TEXT_COLOR_BLUE + "quit " + SET_TEXT_COLOR_MAGENTA + "- playing chess\n" +
-                SET_TEXT_COLOR_BLUE + "help " + SET_TEXT_COLOR_MAGENTA + "- with possible commands\n");
-
     }
 
     private String eval(String input) {
@@ -79,7 +71,7 @@ public class PreloginUI {
         serverFacade.register(params[0], params[1], params[2]);
 
         signedIn = true;
-        return String.format("You registered as %s.", params[0]);
+        return String.format("You logged in as %s.", params[0]);
     }
 
     private String login(String... params) throws ResponseException {
@@ -91,6 +83,14 @@ public class PreloginUI {
 
         signedIn = true;
         return String.format("You logged in as %s.", params[0]);
+    }
+
+    private String help() {
+        return (SET_TEXT_COLOR_BLUE + "register <USERNAME> <PASSWORD> <EMAIL> " + SET_TEXT_COLOR_MAGENTA + "- to create an account\n" +
+                SET_TEXT_COLOR_BLUE + "login <USERNAME> <PASSWORD> " + SET_TEXT_COLOR_MAGENTA + "- to play chess\n" +
+                SET_TEXT_COLOR_BLUE + "quit " + SET_TEXT_COLOR_MAGENTA + "- playing chess\n" +
+                SET_TEXT_COLOR_BLUE + "help " + SET_TEXT_COLOR_MAGENTA + "- with possible commands\n");
+
     }
 
 }
