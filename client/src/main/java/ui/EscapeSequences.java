@@ -5,6 +5,8 @@ package ui;
  */
 public class EscapeSequences {
 
+    private static final String ESCAPE = "\u001b[";
+
     private static final String UNICODE_ESCAPE = "\u001b";
     private static final String ANSI_ESCAPE = "\033";
 
