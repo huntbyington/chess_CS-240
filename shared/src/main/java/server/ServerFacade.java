@@ -23,13 +23,15 @@ public class ServerFacade {
     }
 
     /* UserHandler Requests */
-    public AuthData register(UserData user) throws ResponseException {
+    public AuthData register(String username, String password, String email) throws ResponseException {
         var path = "/user";
+        UserData user = new UserData(username, password, email);
         return this.makeRequest("POST", path, user, AuthData.class);
     }
 
-    public AuthData login(UserData user) throws ResponseException {
+    public AuthData login(String username, String password) throws ResponseException {
         var path = "/session";
+        UserData user = new UserData(username, password);
         return this.makeRequest("POST", path, user, AuthData.class);
     }
 
