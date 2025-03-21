@@ -35,9 +35,9 @@ public class ServerFacade {
         return this.makeRequest("POST", path, user, AuthData.class);
     }
 
-    public void logout(AuthData auth) throws ResponseException {
+    public void logout() throws ResponseException {
         var path = "/session";
-        this.makeRequest("DELETE", path, auth, null);
+        this.makeRequest("DELETE", path, null, null);
     }
 
     /* GameHandler Requests */
