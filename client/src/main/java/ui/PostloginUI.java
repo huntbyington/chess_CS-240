@@ -49,12 +49,23 @@ public class PostloginUI {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
+                case "create" -> create();
                 case "quit" -> quit();
                 default -> help();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+
+    private String create(String... params) throws ResponseException {
+        if (params.length < 1) {
+            throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
+        }
+
+        serverFacade.createGame(params[0]);
+
+        return String.format("You created the game: %s.", params[0]);
     }
 
     private String quit() throws ResponseException {
