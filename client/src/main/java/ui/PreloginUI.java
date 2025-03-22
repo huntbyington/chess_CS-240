@@ -56,6 +56,7 @@ public class PreloginUI {
                 case "register" -> register(params);
                 case "login" -> login(params);
                 case "quit" -> "quit";
+                case "clear" -> clear();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -71,7 +72,7 @@ public class PreloginUI {
         serverFacade.register(params[0], params[1], params[2]);
 
         signedIn = true;
-        return String.format("You logged in as %s.", params[0]);
+        return String.format("You logged in as %s.\n", params[0]);
     }
 
     private String login(String... params) throws ResponseException {
@@ -82,7 +83,7 @@ public class PreloginUI {
         serverFacade.login(params[0], params[1]);
 
         signedIn = true;
-        return String.format("You logged in as %s.", params[0]);
+        return String.format("You logged in as %s.\n", params[0]);
     }
 
     private String help() {
@@ -91,6 +92,11 @@ public class PreloginUI {
                 SET_TEXT_COLOR_BLUE + "quit " + SET_TEXT_COLOR_MAGENTA + "- playing chess\n" +
                 SET_TEXT_COLOR_BLUE + "help " + SET_TEXT_COLOR_MAGENTA + "- with possible commands\n");
 
+    }
+
+    private String clear() throws ResponseException {
+        serverFacade.clear();
+        return "";
     }
 
 }
