@@ -44,6 +44,7 @@ public class ServerFacade {
 
     public void logout() throws ResponseException {
         var path = "/session";
+        authToken = null;
         this.makeRequest("DELETE", path, null, null);
     }
 
