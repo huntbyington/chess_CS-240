@@ -1,5 +1,6 @@
 package ui;
 
+import com.google.gson.Gson;
 import exception.ResponseException;
 import server.ServerFacade;
 
@@ -50,6 +51,7 @@ public class PostloginUI {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "create" -> create();
+                case "list" -> list();
                 case "quit" -> quit();
                 default -> help();
             };
@@ -60,12 +62,22 @@ public class PostloginUI {
 
     private String create(String... params) throws ResponseException {
         if (params.length < 1) {
-            throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
+            throw new ResponseException(400, "Expected: <NAME>");
         }
 
         serverFacade.createGame(params[0]);
 
         return String.format("You created the game: %s.", params[0]);
+    }
+
+    private String list() throws ResponseException {
+        var games = serverFacade.listGames();
+        var result = new StringBuilder();
+        var gson = new Gson();
+        for (var game : games) {
+            result.append(gson.toJson(game)).append('\n');
+        }
+        return result.toString();
     }
 
     private String quit() throws ResponseException {
