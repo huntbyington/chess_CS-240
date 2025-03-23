@@ -27,6 +27,7 @@ public class PreloginUI {
         while (!result.equals("quit")) {
             if (signedIn) {
                 result = new PostloginUI(serverFacade).run();
+                signedIn = false;
                 continue;
             }
             printPrompt();

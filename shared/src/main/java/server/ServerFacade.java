@@ -38,14 +38,19 @@ public class ServerFacade {
         var path = "/session";
         UserData user = new UserData(username, password);
         AuthData authData = this.makeRequest("POST", path, user, AuthData.class);
-        authToken = authData.authToken();
+        this.authToken = authData.authToken();
         return authData;
     }
 
     public void logout() throws ResponseException {
+        if (authToken == null) {
+            throw new ResponseException(401, "Error: Not authenticated");
+        }
+
         var path = "/session";
-        authToken = null;
         this.makeRequest("DELETE", path, null, null);
+
+        this.authToken = null;
     }
 
     /* GameHandler Requests */
@@ -58,9 +63,11 @@ public class ServerFacade {
         return response.chessGames();
     }
 
+    private record GameName(String gameName) {}
+
     public void createGame(String gameName) throws ResponseException {
         var path = "/game";
-        this.makeRequest("POST", path, gameName, Integer.class);
+        this.makeRequest("POST", path, new GameName(gameName), Object.class);
     }
 
     public void joinGame(String playerColor, int gameID) throws ResponseException {

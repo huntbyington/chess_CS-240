@@ -50,8 +50,9 @@ public class PostloginUI {
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "create" -> create();
+                case "create" -> create(params);
                 case "list" -> list();
+                case "logout" -> logout();
                 case "quit" -> quit();
                 default -> help();
             };
@@ -78,6 +79,13 @@ public class PostloginUI {
             result.append(gson.toJson(game)).append('\n');
         }
         return result.toString();
+    }
+
+    private String logout() throws ResponseException {
+        serverFacade.logout();
+
+        signedIn = false;
+        return "";
     }
 
     private String quit() throws ResponseException {
