@@ -14,6 +14,7 @@ public class PostloginUI {
     private ServerFacade serverFacade;
     private boolean signedIn = true;
     private boolean inGame = false;
+    private int gameNum = 0;
 
     public PostloginUI(ServerFacade serverFacade) {
         this.serverFacade = serverFacade;
@@ -54,6 +55,7 @@ public class PostloginUI {
                 case "create" -> create(params);
                 case "list" -> list();
                 case "join" -> join(params);
+                case "observe" -> observe(params);
                 case "logout" -> logout();
                 case "quit" -> quit();
                 default -> help();
@@ -92,6 +94,19 @@ public class PostloginUI {
         }
 
         serverFacade.joinGame(params[1], Integer.parseInt(params[0]));
+        inGame = true;
+        gameNum = Integer.parseInt(params[0]);
+
+        return "";
+    }
+
+    private String observe(String ... params) throws ResponseException {
+        if (params.length < 1) {
+            throw new ResponseException(400, "Expected: <ID>");
+        }
+
+        inGame = true;
+        gameNum = Integer.parseInt(params[0]);
 
         return "";
     }
