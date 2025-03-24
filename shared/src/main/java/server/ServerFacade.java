@@ -54,13 +54,14 @@ public class ServerFacade {
     }
 
     /* GameHandler Requests */
-    record listGamesResponse(ChessGame[] chessGames) {}
+    public record GameListObject(int gameID, String whiteUsername, String blackUsername, String gameName) {}
+    record listGamesResponse(Collection<GameListObject> games) {}
 
-    public ChessGame[] listGames() throws ResponseException {
+    public Collection<GameListObject> listGames() throws ResponseException {
         var path = "/game";
         var response = this.makeRequest("GET", path, null, listGamesResponse.class);
 
-        return response.chessGames();
+        return response.games();
     }
 
     private record GameName(String gameName) {}
@@ -125,9 +126,10 @@ public class ServerFacade {
         T response = null;
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
+//                InputStreamReader reader = new InputStreamReader(respBody);
+                String body = new String(respBody.readAllBytes());
                 if (responseClass != null) {
-                    response = new Gson().fromJson(reader, responseClass);
+                    response = new Gson().fromJson(body, responseClass);
                 }
             }
         }

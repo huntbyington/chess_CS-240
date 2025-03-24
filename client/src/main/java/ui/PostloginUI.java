@@ -75,6 +75,9 @@ public class PostloginUI {
         var games = serverFacade.listGames();
         var result = new StringBuilder();
         var gson = new Gson();
+        if (games == null) {
+            return "No current games";
+        }
         for (var game : games) {
             result.append(gson.toJson(game)).append('\n');
         }
