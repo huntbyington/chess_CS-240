@@ -13,6 +13,7 @@ public class PostloginUI {
 
     private ServerFacade serverFacade;
     private boolean signedIn = true;
+    private boolean inGame = false;
 
     public PostloginUI(ServerFacade serverFacade) {
         this.serverFacade = serverFacade;
@@ -52,6 +53,7 @@ public class PostloginUI {
             return switch (cmd) {
                 case "create" -> create(params);
                 case "list" -> list();
+                case "join" -> join(params);
                 case "logout" -> logout();
                 case "quit" -> quit();
                 default -> help();
@@ -82,6 +84,16 @@ public class PostloginUI {
             result.append(gson.toJson(game)).append('\n');
         }
         return result.toString();
+    }
+
+    private String join(String ... params) throws ResponseException {
+        if (params.length < 2) {
+            throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
+        }
+
+        serverFacade.joinGame(params[1], Integer.parseInt(params[0]));
+
+        return "";
     }
 
     private String logout() throws ResponseException {
