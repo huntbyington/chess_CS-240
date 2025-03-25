@@ -50,7 +50,10 @@ public class GameService {
 
     public void joinGame(String authToken, String playerColor, int gameID) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
-        playerColor = playerColor.toUpperCase();
+
+        if (playerColor != null) {
+            playerColor = playerColor.toUpperCase();
+        }
 
         if (authData == null) {
             throw new DataAccessException("Incorrect Authorization");

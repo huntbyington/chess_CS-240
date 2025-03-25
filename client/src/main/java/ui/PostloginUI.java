@@ -1,11 +1,11 @@
 package ui;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import server.ServerFacade;
 
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 import static ui.EscapeSequences.*;
 
@@ -15,6 +15,7 @@ public class PostloginUI {
     private boolean signedIn = true;
     private boolean inGame = false;
     private int gameNum = 0;
+    private String team = "WHITE";
 
     public PostloginUI(ServerFacade serverFacade) {
         this.serverFacade = serverFacade;
@@ -26,6 +27,16 @@ public class PostloginUI {
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (signedIn) {
+            if(inGame) {
+                ChessBoard board = new ChessBoard();
+                board.resetBoard();
+                System.out.print(new PrintChessBoard(board, team).print());
+                if (Objects.equals(result, "quit")) {
+                    signedIn = false;
+                }
+                inGame = false; // Set to false until GameUI is implemented
+                continue;
+            }
             printPrompt();
             String line = scanner.nextLine();
 
@@ -96,6 +107,7 @@ public class PostloginUI {
         serverFacade.joinGame(params[1], Integer.parseInt(params[0]));
         inGame = true;
         gameNum = Integer.parseInt(params[0]);
+        team = params[1].toUpperCase();
 
         return "";
     }

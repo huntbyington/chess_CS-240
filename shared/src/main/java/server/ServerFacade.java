@@ -112,22 +112,12 @@ public class ServerFacade {
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
         var status = http.getResponseCode();
-//        if (!isSuccessful(status)) {
-//            try (InputStream respErr = http.getErrorStream()) {
-//                if (respErr != null) {
-//                    throw ResponseException.fromJson(respErr);
-//                }
-//            }
-//
-//            throw new ResponseException(status, "other failure: " + status);
-//        }
 
         if (!isSuccessful(status)) {
             System.out.println(status);
             String message = "HTTP Error: " + status;
             try (InputStream errorStream = http.getErrorStream()) {
                 if (errorStream != null) {
-                    // Parse error message safely
                     HashMap<String, Object> error = new Gson().fromJson(new InputStreamReader(errorStream), HashMap.class);
                     if (error.containsKey("message")) {
                         message = (String) error.get("message");
