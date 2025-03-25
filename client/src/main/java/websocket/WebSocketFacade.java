@@ -2,8 +2,8 @@ package websocket;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import webSocketMessages.Action;
-import webSocketMessages.Notification;
+import websocketmessages.Action;
+import websocketmessages.Notification;
 
 import javax.websocket.*;
 import java.io.IOException;

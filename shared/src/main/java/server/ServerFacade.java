@@ -1,10 +1,8 @@
 package server;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
-import model.GameData;
 import model.UserData;
 
 import java.io.*;
@@ -56,11 +54,11 @@ public class ServerFacade {
 
     /* GameHandler Requests */
     public record GameListObject(int gameID, String whiteUsername, String blackUsername, String gameName) {}
-    record listGamesResponse(Collection<GameListObject> games) {}
+    record ListGamesResponse(Collection<GameListObject> games) {}
 
     public Collection<GameListObject> listGames() throws ResponseException {
         var path = "/game";
-        var response = this.makeRequest("GET", path, null, listGamesResponse.class);
+        var response = this.makeRequest("GET", path, null, ListGamesResponse.class);
 
         return response.games();
     }
