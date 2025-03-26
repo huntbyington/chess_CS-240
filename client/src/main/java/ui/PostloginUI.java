@@ -77,7 +77,7 @@ public class PostloginUI {
     }
 
     private String create(String... params) throws ResponseException {
-        if (params.length < 1) {
+        if (params.length != 1) {
             throw new ResponseException(400, "Expected: <NAME>");
         }
 
@@ -89,18 +89,19 @@ public class PostloginUI {
     private String list() throws ResponseException {
         var games = serverFacade.listGames();
         var result = new StringBuilder();
-        var gson = new Gson();
         if (games == null) {
             return "No current games";
         }
         for (var game : games) {
-            result.append(gson.toJson(game)).append('\n');
+            String whiteUsername = (game.whiteUsername() == null) ? "[VACANT]" : game.whiteUsername();
+            String blackUsername = (game.blackUsername() == null) ? "[VACANT]" : game.blackUsername();
+            result.append("GAME: " + game.gameID() + "\n\tWhite User: " + whiteUsername + "\n\tBlack User: " + blackUsername + "\n\tGame Name: " + game.gameName() + "\n");
         }
         return result.toString();
     }
 
     private String join(String ... params) throws ResponseException {
-        if (params.length < 2) {
+        if (params.length != 2) {
             throw new ResponseException(400, "Expected: <ID> [WHITE|BLACK]");
         }
 
@@ -113,12 +114,13 @@ public class PostloginUI {
     }
 
     private String observe(String ... params) throws ResponseException {
-        if (params.length < 1) {
+        if (params.length != 1) {
             throw new ResponseException(400, "Expected: <ID>");
         }
 
         inGame = true;
         gameNum = Integer.parseInt(params[0]);
+        team = "WHITE";
 
         return "";
     }
