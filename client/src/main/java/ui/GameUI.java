@@ -67,7 +67,7 @@ public class GameUI {
     }
 
     private String redraw() throws ResponseException{
-        return null;
+        return new PrintChessBoard(board, team).print().toString();
     }
 
     private String help() {
