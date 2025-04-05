@@ -31,10 +31,11 @@ public class PostloginUI {
                 ChessBoard board = new ChessBoard();
                 board.resetBoard();
                 System.out.print(new PrintChessBoard(board, team).print());
+                result = new GameUI(serverFacade, board, team).run();
+                inGame = false;
                 if (Objects.equals(result, "quit")) {
                     signedIn = false;
                 }
-                inGame = false; // Set to false until GameUI is implemented
                 continue;
             }
             printPrompt();
