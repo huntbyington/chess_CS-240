@@ -59,6 +59,7 @@ public class GameUI {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "redraw" -> redraw();
+                case "leave" -> leave();
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -66,8 +67,13 @@ public class GameUI {
         }
     }
 
-    private String redraw() throws ResponseException{
+    private String redraw() throws ResponseException {
         return new PrintChessBoard(board, team).print().toString();
+    }
+
+    private String leave() {
+        inGame = false;
+        return "";
     }
 
     private String help() {
