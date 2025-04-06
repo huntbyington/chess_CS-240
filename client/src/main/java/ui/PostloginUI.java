@@ -28,15 +28,19 @@ public class PostloginUI {
         var result = "";
         while (signedIn) {
             if(inGame) {
-                ChessBoard board = new ChessBoard();
-                board.resetBoard();
-                System.out.print(new PrintChessBoard(board, team).print());
-                result = new GameUI(serverFacade, board, team).run();
-                inGame = false;
-                if (Objects.equals(result, "quit")) {
-                    signedIn = false;
+                try {
+                    ChessBoard board = new ChessBoard();
+                    board.resetBoard();
+                    System.out.print(new PrintChessBoard(board, team).print());
+                    result = new GameUI(serverFacade, board, team).run();
+                    inGame = false;
+                    if (Objects.equals(result, "quit")) {
+                        signedIn = false;
+                    }
+                    continue;
+                } catch (ResponseException e) {
+                    throw new RuntimeException(e);
                 }
-                continue;
             }
             printPrompt();
             String line = scanner.nextLine();
