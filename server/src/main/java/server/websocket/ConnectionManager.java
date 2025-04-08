@@ -42,11 +42,28 @@ public class ConnectionManager {
         }
     }
 
-    public void sendError(Session session, String errorMessage) {
-        try {
-            if (session.isOpen()) {
-                session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+    public void sendError(Session session, String errorMessage) throws IOException {
+        if (session.isOpen()) {
+            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+        }
+    }
+
+    public void removeGameConnections(int gameID) {
+        var removeList = new ArrayList<Connection>();
+
+        for (var c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (c.gameID == gameID) {
+                    removeList.add(c);
+                }
+            } else {
+                // Clean up any connections that were left open.
+                removeList.add(c);
             }
-        } catch (IOException ignored) {}
+        }
+
+        for (var c : removeList) {
+            connections.remove(c.visitorName);
+        }
     }
 }
