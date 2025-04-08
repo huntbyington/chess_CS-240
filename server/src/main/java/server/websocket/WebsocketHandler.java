@@ -106,7 +106,7 @@ public class WebsocketHandler {
 
             gameData.game().makeMove(command.getMove());
             gameDAO.updateGame(gameData);
-            connections.broadcast(authData.username(), gameData.gameID(), new LoadGame(gameData.game()));
+            connections.broadcast("", gameData.gameID(), new LoadGame(gameData.game()));
 
             var message = String.format("%s made a move.", authData.username());
             connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
