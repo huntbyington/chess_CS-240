@@ -44,12 +44,6 @@ public class GameUI implements NotificationHandler{
     public String run() {
         System.out.print(help());
 
-        try {
-            webSocketFacade.connect(authData.authToken(), gameNum);
-        } catch (ResponseException e) {
-            System.out.println(e.getMessage());
-        }
-
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (inGame) {
@@ -84,8 +78,8 @@ public class GameUI implements NotificationHandler{
                 case "move" -> move(params);
                 default -> help();
             };
-        } catch (ResponseException ex) {
-            return ex.getMessage();
+        } catch (ResponseException e) {
+            return e.getMessage();
         }
     }
 
@@ -93,7 +87,8 @@ public class GameUI implements NotificationHandler{
         return new PrintChessBoard(board, team).print().toString();
     }
 
-    private String leave() {
+    private String leave() throws ResponseException {
+        webSocketFacade.leave(authData.authToken(), gameNum);
         inGame = false;
         return "";
     }

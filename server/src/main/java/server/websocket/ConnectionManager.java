@@ -20,6 +20,13 @@ public class ConnectionManager {
     public void remove(String visitorName) {
         connections.remove(visitorName);
     }
+    public void remove(Session session) {
+        for(var c : connections.values()) {
+            if (c.session == session) {
+                connections.remove(c.visitorName);
+            }
+        }
+    }
 
     public void broadcast(String excludeVisitorName, int gameID, ServerMessage notification) throws IOException {
         var json = new Gson().toJson(notification);
