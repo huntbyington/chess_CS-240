@@ -87,4 +87,14 @@ public class MemoryGameDataAccessTests {
         assert expected == null;
         assert expected1 == null;
     }
+
+    @Test
+    @DisplayName("Delete Game Test")
+    public void deleteGameTest() throws DataAccessException {
+        myGames.deleteGame(gameData.gameID());
+
+        GameData expected = myGames.getGame(gameData.gameID());
+
+        assert expected == null;
+    }
 }
