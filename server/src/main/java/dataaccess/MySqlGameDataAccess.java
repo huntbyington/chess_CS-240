@@ -149,6 +149,18 @@ public class MySqlGameDataAccess implements GameDAO{
         }
     }
 
+    public void deleteGame(int gameID) throws DataAccessException{
+        try {
+            var conn = getConnection();
+            var deleteGameCommand = "DELETE FROM games WHERE gameID=?;";
+            var deleteGameStatement = conn.prepareStatement(deleteGameCommand);
+
+            deleteGameStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void clear() throws DataAccessException {
         try {
