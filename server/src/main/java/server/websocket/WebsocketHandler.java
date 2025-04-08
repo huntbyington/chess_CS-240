@@ -1,7 +1,5 @@
 package server.websocket;
 
-import chess.ChessBoard;
-import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
@@ -60,23 +58,29 @@ public class WebsocketHandler {
                 MakeMoveCommand makeMoveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
                 handleMakeMove(session, makeMoveCommand);
             }
+            case LEAVE -> {
+                handleLeave(session, command);
+            }
             case RESIGN -> {
                 handleResign(session, command);
             }
         }
     }
 
+    private void validateAuthAndGame(AuthData authData, GameData gameData) throws DataAccessException {
+        if (authData == null) {
+            throw new DataAccessException("Incorrect Authorization");
+        }
+        if (gameData == null) {
+            throw new DataAccessException("Invalid Game ID");
+        }
+    }
+
     private void handleConnect(Session session, UserGameCommand command) {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            if (authData == null) {
-                throw new DataAccessException("Incorrect Authorization");
-            }
-
             GameData gameData = gameDAO.getGame(command.getGameID());
-            if (gameData == null) {
-                throw new DataAccessException("Invalid Game ID");
-            }
+            validateAuthAndGame(authData, gameData);
 
             connections.add(authData.username(), command.getGameID(), session);
 
@@ -93,14 +97,8 @@ public class WebsocketHandler {
     private void handleMakeMove(Session session, MakeMoveCommand command) {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            if (authData == null) {
-                throw new DataAccessException("Incorrect Authorization");
-            }
-
             GameData gameData = gameDAO.getGame(command.getGameID());
-            if (gameData == null) {
-                throw new DataAccessException("Invalid Game ID");
-            }
+            validateAuthAndGame(authData, gameData);
 
             gameData.game().makeMove(command.getMove());
             gameDAO.updateGame(gameData);
@@ -112,21 +110,37 @@ public class WebsocketHandler {
             exceptionHandler(e.getMessage(), session);
         } catch (InvalidMoveException e) {
             exceptionHandler("Invalid Move", session);
-        } catch (IOException ignore) {
+        } catch (IOException e) {
+            try {
+                connections.sendError(session, "Error: Internal Server Error");
+            } catch (IOException ignored) {}
+        }
+    }
+
+    private void handleLeave(Session session, UserGameCommand command) {
+        try {
+            AuthData authData = authDAO.getAuth(command.getAuthToken());
+            GameData gameData = gameDAO.getGame(command.getGameID());
+            validateAuthAndGame(authData, gameData);
+
+            var message = String.format("%s has left the game", authData.username());
+            connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
+
+            connections.remove(authData.username());
+        } catch (DataAccessException e) {
+            exceptionHandler(e.getMessage(), session);
+        } catch (IOException e) {
+            try {
+                connections.sendError(session, "Error: Internal Server Error");
+            } catch (IOException ignored) {}
         }
     }
 
     private void handleResign(Session session, UserGameCommand command) {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
-            if (authData == null) {
-                throw new DataAccessException("Incorrect Authorization");
-            }
-
             GameData gameData = gameDAO.getGame(command.getGameID());
-            if (gameData == null) {
-                throw new DataAccessException("Invalid Game ID");
-            }
+            validateAuthAndGame(authData, gameData);
 
             var message = String.format("%s resigned\nThanks for playing!", authData.username());
             connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
@@ -137,6 +151,10 @@ public class WebsocketHandler {
             gameDAO.deleteGame(gameData.gameID());
         } catch (DataAccessException e) {
             exceptionHandler(e.getMessage(), session);
-        } catch (IOException ignored) {}
+        } catch (IOException e) {
+            try {
+                connections.sendError(session, "Error: Internal Server Error");
+            } catch (IOException ignored) {}
+        }
     }
 }
