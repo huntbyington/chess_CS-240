@@ -88,7 +88,7 @@ public class WebsocketHandler {
 
             connections.add(authData.username(), command.getGameID(), session);
 
-            connections.broadcast(authData.username(), gameData.gameID(), new LoadGame(gameData.game()));
+            connections.sendToUser(session, new LoadGame(gameData.game()));
 
             var message = String.format("%s joined the game", authData.username());
             connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
