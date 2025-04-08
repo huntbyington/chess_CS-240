@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
+import model.AuthData;
 import server.ServerFacade;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
@@ -16,17 +17,23 @@ import static ui.EscapeSequences.*;
 
 public class GameUI implements NotificationHandler{
 
-    private ServerFacade serverFacade;
+//    private ServerFacade serverFacade;
     private WebSocketFacade webSocketFacade;
     private boolean inGame = true;
+    private AuthData authData;
+    private int gameNum;
     private ChessBoard board;
     private String team;
 
-    public GameUI(ServerFacade serverFacade, ChessBoard board, String team) throws ResponseException {
-        this.serverFacade = serverFacade;
+    public GameUI(ServerFacade serverFacade, AuthData authData, int gameNum, ChessBoard board, String team) throws ResponseException {
+//        this.serverFacade = serverFacade;
         webSocketFacade = new WebSocketFacade(serverFacade.getUrl(), this);
+        this.authData = authData;
+        this.gameNum = gameNum;
         this.board = board;
         this.team = team;
+
+        webSocketFacade.connect(authData.authToken(), gameNum);
     }
 
     public void notify(ServerMessage notification) {
@@ -36,6 +43,12 @@ public class GameUI implements NotificationHandler{
 
     public String run() {
         System.out.print(help());
+
+        try {
+            webSocketFacade.connect(authData.authToken(), gameNum);
+        } catch (ResponseException e) {
+            System.out.println(e.getMessage());
+        }
 
         Scanner scanner = new Scanner(System.in);
         var result = "";

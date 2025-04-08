@@ -18,7 +18,6 @@ public class WebSocketFacade extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
 
-
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws ResponseException {
         try {
             url = url.replace("http", "ws");
@@ -46,23 +45,7 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void makeMove(String authToken, int gameID, ChessMove move) {
-        try {
-            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID);
-
-            var container = new Object() {
-                final UserGameCommand userGameCommand = action;
-                final ChessMove chessMove = move;
-            };
-
-
-            this.session.getBasicRemote().sendText(new Gson().toJson(container));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void enterGameplay(String authToken, int gameID) throws ResponseException {
+    public void connect(String authToken, int gameID) throws ResponseException {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));

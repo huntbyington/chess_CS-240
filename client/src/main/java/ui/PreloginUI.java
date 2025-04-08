@@ -1,6 +1,7 @@
 package ui;
 
 import exception.ResponseException;
+import model.AuthData;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -13,6 +14,7 @@ public class PreloginUI {
 
     private ServerFacade serverFacade;
     private boolean signedIn = false;
+    private AuthData authData = null;
 
     public PreloginUI(String url) {
         serverFacade = new ServerFacade(url);
@@ -26,7 +28,7 @@ public class PreloginUI {
         var result = "";
         while (!result.equals("quit")) {
             if (signedIn) {
-                result = new PostloginUI(serverFacade).run();
+                result = new PostloginUI(serverFacade, authData).run();
                 signedIn = false;
                 continue;
             }
@@ -60,8 +62,8 @@ public class PreloginUI {
                 case "clear" -> clear();
                 default -> help();
             };
-        } catch (ResponseException ex) {
-            return ex.getMessage();
+        } catch (ResponseException e) {
+            return e.getMessage();
         }
     }
 
@@ -70,7 +72,7 @@ public class PreloginUI {
             throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD> <EMAIL>");
         }
 
-        serverFacade.register(params[0], params[1], params[2]);
+        authData = serverFacade.register(params[0], params[1], params[2]);
 
         signedIn = true;
         return String.format("You logged in as %s.\n", params[0]);
@@ -81,7 +83,7 @@ public class PreloginUI {
             throw new ResponseException(400, "Expected: <USERNAME> <PASSWORD>");
         }
 
-        serverFacade.login(params[0], params[1]);
+        authData = serverFacade.login(params[0], params[1]);
 
         signedIn = true;
         return String.format("You logged in as %s.\n", params[0]);

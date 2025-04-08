@@ -3,6 +3,7 @@ package ui;
 import chess.ChessBoard;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import server.ServerFacade;
 
 import java.util.*;
@@ -12,13 +13,15 @@ import static ui.EscapeSequences.*;
 public class PostloginUI {
 
     private ServerFacade serverFacade;
+    private AuthData authData;
     private boolean signedIn = true;
     private boolean inGame = false;
     private int gameNum = 0;
     private String team = "WHITE";
 
-    public PostloginUI(ServerFacade serverFacade) {
+    public PostloginUI(ServerFacade serverFacade, AuthData authData) {
         this.serverFacade = serverFacade;
+        this.authData = authData;
     }
 
     public String run() {
@@ -32,7 +35,7 @@ public class PostloginUI {
                     ChessBoard board = new ChessBoard();
                     board.resetBoard();
                     System.out.print(new PrintChessBoard(board, team).print());
-                    result = new GameUI(serverFacade, board, team).run();
+                    result = new GameUI(serverFacade, authData, gameNum, board, team).run();
                     inGame = false;
                     if (Objects.equals(result, "quit")) {
                         signedIn = false;
@@ -76,8 +79,8 @@ public class PostloginUI {
                 case "quit" -> quit();
                 default -> help();
             };
-        } catch (ResponseException ex) {
-            return ex.getMessage();
+        } catch (ResponseException e) {
+            return e.getMessage();
         }
     }
 
