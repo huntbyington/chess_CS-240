@@ -1,6 +1,8 @@
 package server.websocket;
 
+import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ErrorMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -19,12 +21,15 @@ public class ConnectionManager {
         connections.remove(visitorName);
     }
 
-    public void broadcast(String excludeVisitorName, ServerMessage notification) throws IOException {
+    public void broadcast(String excludeVisitorName, int gameID, ServerMessage notification) throws IOException {
+        var json = new Gson().toJson(notification);
         var removeList = new ArrayList<Connection>();
+
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
-                if (!c.visitorName.equals(excludeVisitorName)) {
-                    c.send(notification.toString());
+                if (!c.visitorName.equals(excludeVisitorName) && c.gameID == gameID) {
+                    System.out.println(json);
+                    c.send(json);
                 }
             } else {
                 removeList.add(c);
@@ -35,5 +40,13 @@ public class ConnectionManager {
         for (var c : removeList) {
             connections.remove(c.visitorName);
         }
+    }
+
+    public void sendError(Session session, String errorMessage) {
+        try {
+            if (session.isOpen()) {
+                session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
+            }
+        } catch (IOException ignored) {}
     }
 }
