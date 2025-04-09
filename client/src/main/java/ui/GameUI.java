@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
@@ -39,7 +40,8 @@ public class GameUI implements NotificationHandler{
 
     public void loadGame(LoadGame loadGame) {
         game = loadGame.getGame();
-        System.out.println(redraw());
+        System.out.println("\n" + redraw());
+        printPrompt();
     }
 
     public void notify(ServerMessage notification) {
@@ -118,7 +120,7 @@ public class GameUI implements NotificationHandler{
             }
         }
 
-        // Make move
+        webSocketFacade.makeMove(authData.authToken(), gameID, new ChessMove(from, to, promotionPiece));
 
         return "";
     }
