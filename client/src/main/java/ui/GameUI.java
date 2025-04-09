@@ -70,8 +70,8 @@ public class GameUI implements NotificationHandler{
                 result = eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + SET_TEXT_BOLD + result);
             } catch (Throwable e) {
-                var msg = e.toString();
-                System.out.print(msg);
+                var eMsg = e.toString();
+                System.out.print(eMsg);
             }
         }
         System.out.println();

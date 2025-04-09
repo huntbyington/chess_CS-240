@@ -55,38 +55,28 @@ public class PrintChessBoard {
     private StringBuilder getRow(int rowNum, Collection<ChessMove> moves) {
         StringBuilder ret = new StringBuilder();
 
-        if (Objects.equals(team, "WHITE")) {
-            for (int i = 1; i < 9; i++) {
-                if (moves != null) {
-                    ChessPosition currPosition = new ChessPosition(rowNum, i);
-                    String highlightedSquares = addHighlight(currPosition, moves);
-                    if (highlightedSquares != null) {
-                        ret.append(highlightedSquares);
-                        ret.append(getPiece(rowNum, i));
-                        continue;
-                    }
+        int start = (Objects.equals(team, "WHITE")) ? 1 : 8;
+        int finish = (Objects.equals(team, "WHITE")) ? 9 : 0;
+        int incr = (Objects.equals(team, "WHITE")) ? 1 : -1;
+
+        for (int i = start; i != finish; i+=incr) {
+            if (moves != null) {
+                ChessPosition currPosition = new ChessPosition(rowNum, i);
+                String highlightedSquares = addHighlight(currPosition, moves);
+                if (highlightedSquares != null) {
+                    ret.append(highlightedSquares);
+                    ret.append(getPiece(rowNum, i));
+                    continue;
                 }
-                ret.append(getBG(rowNum, i));
-                ret.append(getPiece(rowNum, i));
             }
-        } else {
-            for (int i = 8; i > 0; i--) {
-                if (moves != null) {
-                    ChessPosition currPosition = new ChessPosition(rowNum, i);
-                    String highlightedSquares = addHighlight(currPosition, moves);
-                    if (highlightedSquares != null) {
-                        ret.append(highlightedSquares);
-                        ret.append(getPiece(rowNum, i));
-                        continue;
-                    }
-                }
-                ret.append(getBG(rowNum, i));
-                ret.append(getPiece(rowNum, i));
-            }
+            ret.append(getBG(rowNum, i));
+            ret.append(getPiece(rowNum, i));
         }
 
         return ret;
     }
+
+
 
     private String getBG(int row, int col) {
         return ((row + col) % 2 == 0) ? SET_BG_COLOR_DARK_GREY : SET_BG_COLOR_WHITE;
