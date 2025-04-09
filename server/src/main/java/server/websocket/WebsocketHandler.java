@@ -1,5 +1,7 @@
 package server.websocket;
 
+import chess.ChessGame;
+import chess.ChessPosition;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.*;
@@ -24,10 +26,13 @@ public class WebsocketHandler {
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
 
+    int gameEnd; // 0:Ongoing, 1:Checkmate, 2:Stalemate
+
     public WebsocketHandler() {
         this.userDAO = DAOProvider.getUserDAO();
         this.gameDAO = DAOProvider.getGameDAO();
         this.authDAO = DAOProvider.getAuthDAO();
+        gameEnd = 0;
     }
 
     private static void exceptionHandler(String eMessage, Session session) {
@@ -98,18 +103,63 @@ public class WebsocketHandler {
         }
     }
 
+    private boolean checkObserver(String username, GameData gameData) {
+        return Objects.equals(username, gameData.whiteUsername()) || Objects.equals(username, gameData.blackUsername());
+    }
+
+    private boolean checkPieceColor(ChessPosition position, String username, GameData gameData) {
+        ChessGame.TeamColor team = (Objects.equals(username, gameData.whiteUsername())) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+        return gameData.game().getBoard().getPiece(position).getTeamColor() == team;
+    }
+
+    private int checkGameOver(ChessGame game) {
+        if ((game.isInCheckmate(ChessGame.TeamColor.WHITE)) || (game.isInCheckmate(ChessGame.TeamColor.BLACK))) {
+            return 1;
+        }
+        if (game.isInStalemate(ChessGame.TeamColor.WHITE) || game.isInStalemate(ChessGame.TeamColor.BLACK)) {
+            return 2;
+        }
+        return 0;
+    }
+
     private void handleMakeMove(Session session, MakeMoveCommand command) {
         try {
             AuthData authData = authDAO.getAuth(command.getAuthToken());
             GameData gameData = gameDAO.getGame(command.getGameID());
             validateAuthAndGame(authData, gameData);
 
-            gameData.game().makeMove(command.getMove());
-            gameDAO.updateGame(gameData);
-            connections.broadcast("", gameData.gameID(), new LoadGame(gameData.game()));
+            int gameID = command.getGameID();
+            Object gameLock = connections.getGameLock(gameID);
 
-            var message = String.format("%s made a move.", authData.username());
-            connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
+            synchronized (gameLock) {
+                if (gameEnd != 0) {
+                    throw new DataAccessException("Invalid Move");
+                }
+
+                if (!checkObserver(authData.username(), gameData)) {
+                    throw new DataAccessException("Invalid Move");
+                }
+
+                if (!checkPieceColor(command.getMove().getStartPosition(), authData.username(), gameData)) {
+                    throw new DataAccessException("Invalid Move");
+                }
+
+                gameData.game().makeMove(command.getMove());
+                gameDAO.updateGame(gameData);
+                connections.broadcast("", gameData.gameID(), new LoadGame(gameData.game()));
+
+                var message = String.format("%s made a move.", authData.username());
+                connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
+
+                gameEnd = checkGameOver(gameData.game());
+                if (gameEnd == 1) {
+                    message = String.format("%s won the game!", authData.username());
+                    connections.broadcast("", gameData.gameID(), new Notification(message));
+                }
+                if (gameEnd == 2) {
+                    connections.broadcast("", gameData.gameID(), new Notification("It's a standoff\\uD83E\\uDD20"));
+                }
+            }
         } catch (DataAccessException e) {
             exceptionHandler(e.getMessage(), session);
         } catch (InvalidMoveException e) {

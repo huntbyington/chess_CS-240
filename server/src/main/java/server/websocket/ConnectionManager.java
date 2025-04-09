@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Integer, Object> gameLocks = new ConcurrentHashMap<>();
 
     public void add(String visitorName, int gameID, Session session) {
         var connection = new Connection(visitorName, gameID, session);
@@ -28,6 +29,11 @@ public class ConnectionManager {
                 connections.remove(c.visitorName);
             }
         }
+    }
+
+    // This method ensures that multiple clients won't run into issues when trying to communicate at the same time
+    public Object getGameLock(int gameID) {
+        return gameLocks.computeIfAbsent(gameID, k -> new Object());
     }
 
     public void broadcast(String excludeVisitorName, int gameID, ServerMessage notification) throws IOException {
@@ -53,8 +59,7 @@ public class ConnectionManager {
 
     public void sendToUser(Session session, ServerMessage notification) throws IOException {
         if (session.isOpen()) {
-            var json = new Gson().toJson(notification);
-            session.getRemote().sendString(json);
+            session.getRemote().sendString(new Gson().toJson(notification));
         }
     }
 
