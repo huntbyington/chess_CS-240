@@ -1,10 +1,7 @@
 package server.websocket;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
-import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.ErrorMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -63,25 +60,6 @@ public class ConnectionManager {
     public void sendToUser(Session session, ServerMessage notification) throws IOException {
         if (session.isOpen()) {
             session.getRemote().sendString(new Gson().toJson(notification));
-        }
-    }
-
-    public void removeGameConnections(int gameID) {
-        var removeList = new ArrayList<Connection>();
-
-        for (var c : connections.values()) {
-            if (c.session.isOpen()) {
-                if (c.gameID == gameID) {
-                    removeList.add(c);
-                }
-            } else {
-                // Clean up any connections that were left open.
-                removeList.add(c);
-            }
-        }
-
-        for (var c : removeList) {
-            connections.remove(c.visitorName);
         }
     }
 }

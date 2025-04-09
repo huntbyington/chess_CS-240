@@ -21,7 +21,7 @@ import java.util.Objects;
 @WebSocket
 public class WebsocketHandler {
 
-    private static final ConnectionManager connections = new ConnectionManager();
+    private static final ConnectionManager CONNECTIONS = new ConnectionManager();
     private final UserDAO userDAO;
     private final GameDAO gameDAO;
     private final AuthDAO authDAO;
@@ -38,16 +38,16 @@ public class WebsocketHandler {
         try {
             switch (eMessage) {
                 case "Incorrect Authorization", "Incorrect Username or Password" -> {
-                    connections.sendToUser(session, new ErrorMessage("Error: unauthorized"));
+                    CONNECTIONS.sendToUser(session, new ErrorMessage("Error: unauthorized"));
                 }
                 case "Invalid Game ID", "Invalid Player Color", "Invalid Game Name" -> {
-                    connections.sendToUser(session, new ErrorMessage("Error: bad request"));
+                    CONNECTIONS.sendToUser(session, new ErrorMessage("Error: bad request"));
                 }
                 case "Invalid move" -> {
-                    connections.sendToUser(session, new ErrorMessage("Error: Invalid move"));
+                    CONNECTIONS.sendToUser(session, new ErrorMessage("Error: Invalid move"));
                 }
                 case null, default -> {
-                    connections.sendToUser(session, new ErrorMessage(("Error: " + eMessage)));
+                    CONNECTIONS.sendToUser(session, new ErrorMessage(("Error: " + eMessage)));
                 }
             }
         } catch (IOException ignored) {}
@@ -85,19 +85,19 @@ public class WebsocketHandler {
     private void handleConnect(Session session, UserGameCommand command) {
         try {
             int gameID = command.getGameID();
-            Object gameLock = connections.getGameLock(gameID);
+            Object gameLock = CONNECTIONS.getGameLock(gameID);
 
             synchronized (gameLock) {
                 AuthData authData = authDAO.getAuth(command.getAuthToken());
                 GameData gameData = gameDAO.getGame(command.getGameID());
                 validateAuthAndGame(authData, gameData);
 
-                connections.add(authData.username(), command.getGameID(), session);
+                CONNECTIONS.add(authData.username(), command.getGameID(), session);
 
-                connections.sendToUser(session, new LoadGame(gameData.game()));
+                CONNECTIONS.sendToUser(session, new LoadGame(gameData.game()));
 
                 var message = String.format("%s joined the game", authData.username());
-                connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
+                CONNECTIONS.broadcast(authData.username(), gameData.gameID(), new Notification(message));
             }
         } catch (DataAccessException e) {
             exceptionHandler(e.getMessage(), session);
@@ -127,7 +127,7 @@ public class WebsocketHandler {
     private void handleMakeMove(Session session, MakeMoveCommand command) {
         try {
             int gameID = command.getGameID();
-            Object gameLock = connections.getGameLock(gameID);
+            Object gameLock = CONNECTIONS.getGameLock(gameID);
 
             synchronized (gameLock) {
                 AuthData authData = authDAO.getAuth(command.getAuthToken());
@@ -148,17 +148,17 @@ public class WebsocketHandler {
 
                 gameData.game().makeMove(command.getMove());
                 gameDAO.updateGame(gameData);
-                connections.broadcast("", gameData.gameID(), new LoadGame(gameData.game()));
+                CONNECTIONS.broadcast("", gameData.gameID(), new LoadGame(gameData.game()));
 
                 var message = String.format("%s made a move.", authData.username());
-                connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
+                CONNECTIONS.broadcast(authData.username(), gameData.gameID(), new Notification(message));
 
                 if (checkGameOver(gameData.game()) == 1) {
                     message = String.format("%s won the game!", authData.username());
-                    connections.broadcast("", gameData.gameID(), new Notification(message));
+                    CONNECTIONS.broadcast("", gameData.gameID(), new Notification(message));
                 }
                 if (checkGameOver(gameData.game()) == 2) {
-                    connections.broadcast("", gameData.gameID(), new Notification("It's a standoff\\uD83E\\uDD20"));
+                    CONNECTIONS.broadcast("", gameData.gameID(), new Notification("It's a standoff\\uD83E\\uDD20"));
                 }
             }
         } catch (DataAccessException e) {
@@ -167,7 +167,7 @@ public class WebsocketHandler {
             exceptionHandler("Invalid Move", session);
         } catch (IOException e) {
             try {
-                connections.sendToUser(session, new ErrorMessage("Error: Internal Server Error"));
+                CONNECTIONS.sendToUser(session, new ErrorMessage("Error: Internal Server Error"));
             } catch (IOException ignored) {}
         }
     }
@@ -175,7 +175,7 @@ public class WebsocketHandler {
     private void handleLeave(Session session, UserGameCommand command) {
         try {
             int gameID = command.getGameID();
-            Object gameLock = connections.getGameLock(gameID);
+            Object gameLock = CONNECTIONS.getGameLock(gameID);
 
             synchronized (gameLock) {
                 AuthData authData = authDAO.getAuth(command.getAuthToken());
@@ -183,7 +183,7 @@ public class WebsocketHandler {
                 validateAuthAndGame(authData, gameData);
 
                 var message = String.format("%s has left the game", authData.username());
-                connections.broadcast(authData.username(), gameData.gameID(), new Notification(message));
+                CONNECTIONS.broadcast(authData.username(), gameData.gameID(), new Notification(message));
 
                 GameData updateGame;
                 if (Objects.equals(authData.username(), gameData.whiteUsername())) {
@@ -195,13 +195,13 @@ public class WebsocketHandler {
                 }
                 gameDAO.updateGame(updateGame);
 
-                connections.remove(authData.username());
+                CONNECTIONS.remove(authData.username());
             }
         } catch (DataAccessException e) {
             exceptionHandler(e.getMessage(), session);
         } catch (IOException e) {
             try {
-                connections.sendToUser(session, new ErrorMessage("Error: Internal Server Error"));
+                CONNECTIONS.sendToUser(session, new ErrorMessage("Error: Internal Server Error"));
             } catch (IOException ignored) {}
         }
     }
@@ -209,7 +209,7 @@ public class WebsocketHandler {
     private void handleResign(Session session, UserGameCommand command) {
         try {
             int gameID = command.getGameID();
-            Object gameLock = connections.getGameLock(gameID);
+            Object gameLock = CONNECTIONS.getGameLock(gameID);
 
             synchronized (gameLock) {
                 AuthData authData = authDAO.getAuth(command.getAuthToken());
@@ -225,7 +225,7 @@ public class WebsocketHandler {
                 }
 
                 var message = String.format("%s resigned\nThanks for playing!", authData.username());
-                connections.broadcast("", gameData.gameID(), new Notification(message));
+                CONNECTIONS.broadcast("", gameData.gameID(), new Notification(message));
 
                 gameData.game().setGameOver(true);
                 gameDAO.updateGame(gameData);
@@ -234,14 +234,14 @@ public class WebsocketHandler {
             exceptionHandler(e.getMessage(), session);
         } catch (IOException e) {
             try {
-                connections.sendToUser(session, new ErrorMessage("Error: Internal Server Error"));
+                CONNECTIONS.sendToUser(session, new ErrorMessage("Error: Internal Server Error"));
             } catch (IOException ignored) {}
         }
     }
 
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
-        connections.remove(session);
+        CONNECTIONS.remove(session);
         System.out.println("Closed: " + reason);
     }
 
@@ -249,6 +249,6 @@ public class WebsocketHandler {
     public void onError(Session session, Throwable error) {
         System.err.println("WebSocket error:");
         error.printStackTrace();
-        connections.remove(session);
+        CONNECTIONS.remove(session);
     }
 }

@@ -68,7 +68,7 @@ public class GameUI implements NotificationHandler{
 
             try {
                 result = eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                System.out.print(SET_TEXT_COLOR_BLUE + SET_TEXT_BOLD + result);
             } catch (Throwable e) {
                 var msg = e.toString();
                 System.out.print(msg);
@@ -102,7 +102,7 @@ public class GameUI implements NotificationHandler{
     }
 
     private String redraw() {
-        return new PrintChessBoard(game.getBoard(), team).print().toString();
+        return new PrintChessBoard(game.getBoard(), team).print(null).toString();
     }
 
     private String leave() throws ResponseException {
@@ -151,7 +151,7 @@ public class GameUI implements NotificationHandler{
 
         ChessPosition position = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - ('a'-1));
         Collection<ChessMove> moves = game.getBoard().getPiece(position).pieceMoves(game.getBoard(), position);
-        StringBuilder ret = new PrintChessBoard(game.getBoard(), team).highlight(moves);
+        StringBuilder ret = new PrintChessBoard(game.getBoard(), team).print(moves);
 
         return ret.toString();
     }

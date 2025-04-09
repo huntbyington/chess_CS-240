@@ -100,7 +100,8 @@ public class PostloginUI {
         for (var game : games) {
             String whiteUsername = (game.whiteUsername() == null) ? "[VACANT]" : game.whiteUsername();
             String blackUsername = (game.blackUsername() == null) ? "[VACANT]" : game.blackUsername();
-            result.append("GAME: " + game.gameID() + "\n\tWhite User: " + whiteUsername + "\n\tBlack User: " + blackUsername + "\n\tGame Name: " + game.gameName() + "\n");
+            result.append("GAME: " + game.gameID() + "\n\tWhite User: " + whiteUsername +
+                            "\n\tBlack User: " + blackUsername + "\n\tGame Name: " + game.gameName() + "\n");
         }
         return result.toString();
     }

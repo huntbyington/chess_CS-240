@@ -17,29 +17,14 @@ public class PrintChessBoard {
         this.team = team.toUpperCase();
     }
 
-    public StringBuilder print() {
-        StringBuilder ret = new StringBuilder();
-
-        String letters = team.equals("WHITE") ? "    a  b  c  d  e  f  g  h    " : "    h  g  f  e  d  c  b  a    ";
-
-        ret.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_BOLD + SET_TEXT_COLOR_BLACK + letters + RESET_BG_COLOR + "\n");
-
-        if (team.equals("WHITE")) {
-            for (int i = 8; i > 0; i--) {
-                appendRow(ret, i, null);
-            }
-        } else {
-            for (int i = 1; i <= 8; i++) {
-                appendRow(ret, i, null);
-            }
-        }
-
-        ret.append(SET_BG_COLOR_LIGHT_GREY + SET_TEXT_BOLD + SET_TEXT_COLOR_BLACK + letters + RESET_BG_COLOR + "\n");
-
-        return ret;
-    }
-
-    public StringBuilder highlight(Collection<ChessMove> moves) {
+    /**
+     *
+     * @param moves Contains a collection of moves to highlight,
+     *              if you don't wish to highlight moves make it null
+     *
+     * @return      StringBuilder containing printable board data
+     */
+    public StringBuilder print(Collection<ChessMove> moves) {
         StringBuilder ret = new StringBuilder();
 
         String letters = team.equals("WHITE") ? "    a  b  c  d  e  f  g  h    " : "    h  g  f  e  d  c  b  a    ";
