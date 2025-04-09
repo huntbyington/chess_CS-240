@@ -9,10 +9,13 @@ import model.AuthData;
 import server.ServerFacade;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGame;
+import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -44,8 +47,13 @@ public class GameUI implements NotificationHandler{
         printPrompt();
     }
 
-    public void notify(ServerMessage notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.getServerMessage());
+    public void error(ErrorMessage message) {
+        System.out.println(SET_TEXT_COLOR_RED + message.getMessage());
+        printPrompt();
+    }
+
+    public void notify(Notification notification) {
+        System.out.println(SET_TEXT_COLOR_GREEN + notification.getMessage());
         printPrompt();
     }
 
@@ -84,6 +92,8 @@ public class GameUI implements NotificationHandler{
                 case "redraw" -> redraw();
                 case "leave" -> leave();
                 case "move" -> move(params);
+                case "resign" -> resign();
+                case "highlight" -> highlight(params);
                 default -> help();
             };
         } catch (ResponseException e) {
@@ -123,6 +133,27 @@ public class GameUI implements NotificationHandler{
         webSocketFacade.makeMove(authData.authToken(), gameID, new ChessMove(from, to, promotionPiece));
 
         return "";
+    }
+
+    private String resign() throws ResponseException {
+        webSocketFacade.resign(authData.authToken(), gameID);
+        inGame = false;
+        return "";
+    }
+
+    private String highlight(String ... params) throws ResponseException {
+        if (params.length != 1) {
+            throw new ResponseException(400, "Expected: <FROM> <TO> opt:<PROMOTION PIECE>");
+        }
+        if (!(params[0].matches("[a-h][1-8]"))) {
+            throw new ResponseException(400, "Expected Coordinate Format: [a-h][1-8] (i.e. c2 or h5)");
+        }
+
+        ChessPosition position = new ChessPosition(params[0].charAt(1) - '0', params[0].charAt(0) - ('a'-1));
+        Collection<ChessMove> moves = game.getBoard().getPiece(position).pieceMoves(game.getBoard(), position);
+        StringBuilder ret = new PrintChessBoard(game.getBoard(), team).highlight(moves);
+
+        return ret.toString();
     }
 
     private String help() {
