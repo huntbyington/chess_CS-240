@@ -43,8 +43,11 @@ public class ConnectionManager {
         for (var c : connections.values()) {
             if (c.session.isOpen()) {
                 if (!c.visitorName.equals(excludeVisitorName) && c.gameID == gameID) {
-                    System.out.println(json);
-                    c.send(json);
+                    try {
+                        c.send(json);
+                    } catch (IOException e) {
+                        removeList.add(c);
+                    }
                 }
             } else {
                 removeList.add(c);
@@ -60,12 +63,6 @@ public class ConnectionManager {
     public void sendToUser(Session session, ServerMessage notification) throws IOException {
         if (session.isOpen()) {
             session.getRemote().sendString(new Gson().toJson(notification));
-        }
-    }
-
-    public void sendError(Session session, String errorMessage) throws IOException {
-        if (session.isOpen()) {
-            session.getRemote().sendString(new Gson().toJson(new ErrorMessage(errorMessage)));
         }
     }
 
