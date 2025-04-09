@@ -15,11 +15,13 @@ public class ChessGame {
 
     private ChessGame.TeamColor turn;
     private ChessBoard board;
+    private boolean gameOver;
 
     public ChessGame() {
         turn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
+        gameOver = false;
     }
 
     /**
@@ -89,6 +91,7 @@ public class ChessGame {
        if (piece == null) {
            throw new InvalidMoveException("No Piece at Given location");
        }
+       System.out.println("Current color " + getTeamTurn());
        if (!legalMove(move)) {
            throw new InvalidMoveException("Illegal move");
        }
@@ -100,10 +103,11 @@ public class ChessGame {
        if (isInCheck(piece.getTeamColor())) {
            throw new InvalidMoveException("Can't move into check");
        }
-       if (piece.getTeamColor() != turn) {
-            throw new InvalidMoveException("Move made out of turn");
+       if (piece.getTeamColor() != getTeamTurn()) {
+           throw new InvalidMoveException("Move made out of turn");
        }
-       turn = (turn == TeamColor.BLACK) ? TeamColor.WHITE : TeamColor.BLACK;
+       ChessGame.TeamColor newTurn = (turn == TeamColor.BLACK) ? TeamColor.WHITE : TeamColor.BLACK;
+       setTeamTurn(newTurn);
     }
 
     // Checks if current move is a part of the given pieces move set
@@ -185,6 +189,7 @@ public class ChessGame {
     // Returns true if there is a move contained within moves that will make the given team not in check
     private boolean doesEndCheck (Collection<ChessMove> moves, ChessGame.TeamColor teamColor) {
         ChessBoard ogBoard = board.deepCopy();
+        TeamColor ogTurn = turn;
         for (ChessMove move : moves) {
             try {
                 makeMove(move);
@@ -197,6 +202,7 @@ public class ChessGame {
                 }
             } finally {
                 setBoard(ogBoard);
+                turn = ogTurn;
             }
         }
 
@@ -235,6 +241,31 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
+
+    /**
+     * Manually set the gameOver flag
+     *
+     * @param gameOver True/False
+     */
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
+    }
+
+    /**
+     * Checks if game is over, once true stays true
+     *
+     * @return Game over
+     */
+    public boolean isGameOver() {
+        if (gameOver) {
+            return gameOver;
+        }
+        return isInCheckmate(TeamColor.WHITE) ||
+                isInCheckmate(TeamColor.BLACK) ||
+                isInStalemate(TeamColor.WHITE) ||
+                isInStalemate(TeamColor.BLACK);
+    }
+
 
     @Override
     public boolean equals(Object o) {
