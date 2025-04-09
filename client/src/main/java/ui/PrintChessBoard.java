@@ -86,6 +86,15 @@ public class PrintChessBoard {
             }
         } else {
             for (int i = 8; i > 0; i--) {
+                if (moves != null) {
+                    ChessPosition currPosition = new ChessPosition(rowNum, i);
+                    String highlightedSquares = addHighlight(currPosition, moves);
+                    if (highlightedSquares != null) {
+                        ret.append(highlightedSquares);
+                        ret.append(getPiece(rowNum, i));
+                        continue;
+                    }
+                }
                 ret.append(getBG(rowNum, i));
                 ret.append(getPiece(rowNum, i));
             }

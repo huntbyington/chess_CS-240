@@ -16,7 +16,7 @@ import websocket.messages.LoadGame;
 import websocket.messages.Notification;
 import websocket.messages.ServerMessage;
 
-//need to extend Endpoint for websocket to work properly
+// Need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
 
     Session session;
