@@ -32,10 +32,7 @@ public class PostloginUI {
         while (signedIn) {
             if(inGame) {
                 try {
-                    ChessBoard board = new ChessBoard();
-                    board.resetBoard();
-                    System.out.print(new PrintChessBoard(board, team).print());
-                    result = new GameUI(serverFacade, authData, gameNum, board, team).run();
+                    result = new GameUI(serverFacade, authData, gameNum, team).run();
                     inGame = false;
                     if (Objects.equals(result, "quit")) {
                         signedIn = false;

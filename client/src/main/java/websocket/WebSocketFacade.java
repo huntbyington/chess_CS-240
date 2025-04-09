@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import websocket.commands.UserGameCommand;
+import websocket.messages.LoadGame;
 import websocket.messages.ServerMessage;
 
 //need to extend Endpoint for websocket to work properly
@@ -32,7 +33,12 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(notification);
+                    if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                        LoadGame loadGame = new Gson().fromJson(message, LoadGame.class);
+                        notificationHandler.loadGame(loadGame);
+                    } else {
+                        notificationHandler.notify(notification);
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {

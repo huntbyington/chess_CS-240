@@ -1,6 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
+import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import exception.ResponseException;
@@ -8,6 +8,7 @@ import model.AuthData;
 import server.ServerFacade;
 import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
+import websocket.messages.LoadGame;
 import websocket.messages.ServerMessage;
 
 import java.util.Arrays;
@@ -21,19 +22,24 @@ public class GameUI implements NotificationHandler{
     private WebSocketFacade webSocketFacade;
     private boolean inGame = true;
     private AuthData authData;
-    private int gameNum;
-    private ChessBoard board;
+    private int gameID;
+    private ChessGame game;
     private String team;
 
-    public GameUI(ServerFacade serverFacade, AuthData authData, int gameNum, ChessBoard board, String team) throws ResponseException {
+    public GameUI(ServerFacade serverFacade, AuthData authData, int gameID, String team) throws ResponseException {
 //        this.serverFacade = serverFacade;
         webSocketFacade = new WebSocketFacade(serverFacade.getUrl(), this);
         this.authData = authData;
-        this.gameNum = gameNum;
-        this.board = board;
+        this.gameID = gameID;
+        game = new ChessGame();
         this.team = team;
 
-        webSocketFacade.connect(authData.authToken(), gameNum);
+        webSocketFacade.connect(authData.authToken(), gameID);
+    }
+
+    public void loadGame(LoadGame loadGame) {
+        game = loadGame.getGame();
+        System.out.println(redraw());
     }
 
     public void notify(ServerMessage notification) {
@@ -84,11 +90,11 @@ public class GameUI implements NotificationHandler{
     }
 
     private String redraw() {
-        return new PrintChessBoard(board, team).print().toString();
+        return new PrintChessBoard(game.getBoard(), team).print().toString();
     }
 
     private String leave() throws ResponseException {
-        webSocketFacade.leave(authData.authToken(), gameNum);
+        webSocketFacade.leave(authData.authToken(), gameID);
         inGame = false;
         return "";
     }
